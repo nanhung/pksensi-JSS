@@ -10,6 +10,10 @@
 *.so
 *.dat
 *.html
+*.pdf
+*.tex
+*.bbl
+*.blg
 mcsim.*
 manuscript/manuscript_files/*
 manuscript/pbtk1cpt_inits.R
