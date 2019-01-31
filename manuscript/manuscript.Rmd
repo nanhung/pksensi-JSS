@@ -24,17 +24,22 @@ keywords:
   plain:     [Pharmacokinetics, Physiologically based pharmacokinetics, Sensitivity analysis]
 preamble: >
   \usepackage{amsmath}
-output: rticles::jss_article 
-#output: rmarkdown::html_vignette
+bibliography: references.bib 
+output: rticles::jss_article
+
 ---
 
 # Introduction
+
+[@R-sensitivity]
+
+[@R-sensitivity]
 
 Sensitivity analysis is a mathematical technique to investigate how variations in model parameters affect model outputs. An increasing number of studies use sensitivity analysis to determine which model parameters contribute to high variation in model predictions (Ferretti et al., 2016). Also, this technique has been applied in pharmacology and toxicology research (Loizou et al., 2015; McNally et al., 2012; Scherholz et al., 2018). Pharmacokinetic modeling describes the changes in the concentrations or amounts of a substance within model compartments over time. The goal of sensitivity analysis in pharmacokinetic research is to examine the sensitivity of output variables (e.g. compound concentration in blood or tissues) in pharmacokinetic models responds to input parameters, such as anatomical, physiological, and kinetic constants (McNally et al., 2011). It can be further applied to parameter prioritization and parameter fixing before model calibration (Hsieh et al., 2018).  
 
 In our previous work (Hsieh et al., 2018), we developed an approach to apply global sensitivity analysis workflow to reduce the computational burden in the Bayesian,  Markov Chain Monte Carlo (MCMC)-based calibration process of a physiologically based pharmacokinetic (PBPK) model. We used GNU MCSim (Bois, 2009), an effective simulation package for Bayesian population PBPK modeling, to calibrate the model. We found that the extended Fourier Amplitude Sensitivity Test (eFAST), a type of global sensitivity analysis algorithm, had the best balance of efficiency and accuracy for a complex, multi-compartment, multi-dataset, and multi-metabolite PBPK model. Also, we found some efficient visualization approaches that can be used to distinguish between “influential” and “non-influential” parameters. We also found a useful approach for communicating the parameter sensitivity in decision making.  
 
-Most of sensitivity analysis tools are constructed using scientific computing software, such as GNU Octave/Matlab (Pianosi et al., 2015), python (Herman and Usher, 2017), and R (Ghanem et al., 2017). Previously, we mainly used R with the sensitivity package (Pujol et al., 2017), which is a practical tool to conduct local and global sensitivity analysis. The sensitivity package includes some functions to generate the parameter sequences by using different computing algorithms. Also, it provides a feasible way to integrate external modeling results. This computational approach can effectively solve the heavy computing burden of numerical solutions within the pure R environment. Several R packages, such as FME, multisensi, and ODEsensitivity include sensitivity analysis tools and are freely available in the Comprehensive R Archive Network. The FME package contains a basic method for performing local sensitivity analysis for dynamic models (Soetaert and Petzoldt, 2016). The multisensi package provides sensitivity analysis for models with multivariate output (Bidot et al., 2018). ODEsensitivity can perform sensitivity analysis in ordinary differential equation (ODE) models (Weber et al., 2018).  It uses the ODE interface from the deSolve package, connecting it with the sensitivity analysis from the sensitivity package, and can perform sensitivity analysis on models with multivariate output. Although these tools provide various approaches to perform sensitivity analysis, we have not find a suitable package that provides functions with which users can visualize and distinguish the “non-influential” model parameters and can further apply to parameter fixing in pharmacokinetic modeling.  
+Most of sensitivity analysis tools are constructed using scientific computing software, such as GNU Octave/Matlab (Pianosi et al., 2015), python (Herman and Usher, 2017), and R (Ghanem et al., 2017). Previously, we mainly used R with the \pkg{sensitivity} package [@R-sensitivity], which is a practical tool to conduct local and global sensitivity analysis. The sensitivity package includes some functions to generate the parameter sequences by using different computing algorithms. Also, it provides a feasible way to integrate external modeling results. This computational approach can effectively solve the heavy computing burden of numerical solutions within the pure R environment. Several R packages, such as FME, multisensi, and ODEsensitivity include sensitivity analysis tools and are freely available in the Comprehensive R Archive Network. The FME package contains a basic method for performing local sensitivity analysis for dynamic models (Soetaert and Petzoldt, 2016). The multisensi package provides sensitivity analysis for models with multivariate output (Bidot et al., 2018). ODEsensitivity can perform sensitivity analysis in ordinary differential equation (ODE) models (Weber et al., 2018).  It uses the ODE interface from the deSolve package, connecting it with the sensitivity analysis from the sensitivity package, and can perform sensitivity analysis on models with multivariate output. Although these tools provide various approaches to perform sensitivity analysis, we have not find a suitable package that provides functions with which users can visualize and distinguish the “non-influential” model parameters and can further apply to parameter fixing in pharmacokinetic modeling.  
 
 Here we develop an R package, called pksensi, which is designed to make sensitivity analysis more accessible and reproducible in pharmacological and toxicological researches. This package can investigate both parameter uncertainty and sensitivity in pharmacokinetic models, such as PBPK, and advanced compartment absorption and transit models with multivariate model output. The design concepts of pksensi are:  
 
@@ -51,7 +56,7 @@ Here we develop an R package, called pksensi, which is designed to make sensitiv
 
 ## Parameter matrix generation
 
-We adopted eFAST (extended Fourier Amplitude Sensitivity Test), a widely used global sensitivity analysis approach in biomathematical modeling, especially for ordinary differential equation-based dynamical models, in this package (Saltelli et al., 1999). Most of the available eFAST functions, such as the algorithm to generate the parameter space and to set the sampling frequency, were sourced from the R \pkg{sensitivity} package (Pujol et al., 2017). To test the convergence and robustness of the sensitivity measurement, we included a random phase-shift approach to replicate sampling from random starting points across parameter space. This can be written as:
+We adopted eFAST (extended Fourier Amplitude Sensitivity Test), a widely used global sensitivity analysis approach in biomathematical modeling, especially for ordinary differential equation-based dynamical models, in this package (Saltelli et al., 1999). Most of the available eFAST functions, such as the algorithm to generate the parameter space and to set the sampling frequency, were sourced from the R \pkg{sensitivity} package [-@R-sensitivity]. To test the convergence and robustness of the sensitivity measurement, we included a random phase-shift approach to replicate sampling from random starting points across parameter space. This can be written as:
 
 $$ x_i = \frac{1}{2} + \frac{1}{\pi}\arcsin(\sin(\omega_is + \varphi_i)) $$
 
@@ -109,14 +114,14 @@ We first implemented this model in R by compiling the file written in C. pksensi
 
 The following R script can download and compile the model description file (`pbtk1cpt.model`) and use `deSolve` package [@JSSv033i09] to solve ordinary differential equations in our model. The example model code of one-compartment PBTK model is available with pksensi package:
 
-```{r, eval=T}
+```{r, eval=F}
 pbtk1cpt_model()
 cat(readLines("pbtk1cpt.model"), sep = "\n")
 ```
 
 Then, use `compile_model()` to generate the executable files (`pbtk1cpt.dll` on Windows or `pbtk1cpt.so` on other systems) and R file (`pbtk1cpt_inits.R`) with default input parameters and initial state settings with the definition of `application = "R"`. 
 
-```{r, eval=T}
+```{r, eval=F}
 mName <- "pbtk1cpt"
 compile_model(mName, application = "R")
 source(paste0(mName, "_inits.R"))
@@ -124,7 +129,7 @@ source(paste0(mName, "_inits.R"))
 
 The parameter values and initial states can be customized to specify the properties and schedule for the given dosing scenario.
 
-```{r, eval=T}
+```{r, eval=F}
 parms <- initParms()
 parms["vdist"] <- 0.74
 parms["ke"] <- 0.28
@@ -133,15 +138,15 @@ initState <- initStates(parms=parms)
 initState["Agutlument"] <- 10
 ```
 
-```{r, eval=T}
+```{r, eval=F}
 parms
 ```
 
-```{r, eval=T}
+```{r, eval=F}
 initState
 ```
 
-```{r, eval=T}
+```{r, eval=F}
 Outputs
 ```
 
@@ -149,19 +154,19 @@ In the current setting, we assumed the initial condition of the intake chemical 
 
 Through `ode` function in `deSolve` package, we can visualize the pharmacokinetic according to the given parameter conditions such as time points (`times`):
 
-```{r, eval=T}
+```{r, eval=F}
 times <- seq(from = 0.01, to = 24.01, by = 1)
 y <- deSolve::ode(initState, times, func = "derivs", parms = parms, 
                   dllname = mName, initfunc = "initmod", nout = 1, outnames = Outputs)
 ```
 
-```{r, eval=T, fig.cap = 'Figure 1. Simulation results of one-compartment PBTK model.'}
+```{r, eval=F, fig.cap = 'Figure 1. Simulation results of one-compartment PBTK model.'}
 plot(y)
 ```
 
 To conduct sensitivity analysis for the parameters in one-compartment pharmacokinetic model in this case, we want to quantify the impact of these three parameters on the chemical concentration in plasma during 24-hour time period post intake. We assume a uniform distribution for the estimate for each parameter with the coefficient of uncertainty within 50%. The parameter ranges are assumed to be (0.37, 1.12) for `vdist`, (0.0058, 0.0174) for `ke`, and (0.045, 0.136) for `kgutabs`. The sample number determines the robustness of the result of sensitivity analysis. Higher sample numbers can generate narrow confidence intervals for sensitivity measurements across different replications. However, they might cause heavy computational burden for complex models. Here we use a sample number of 400 with 20 replications:
 
-```{r, eval=T}
+```{r, eval=F}
 LL <- 0.5 
 UL <- 1.5
 q <- "qunif"
@@ -175,7 +180,7 @@ x <- rfast99(params, n = 200, q = q, q.arg = q.arg, replicate = 20)
 
 Because the pharmacokinetic model is being used to describe a continuous process for the chemical concentration over time, the sensitivity measurements can also show the time-dependent relationships for each model parameter. Here we define the output time points to examine the change of the parameter sensitivity over time. To solve the pharmacokinetic model through deSolve, we need to provide the details of the argument: 
 
-```{r, eval=T}
+```{r, eval=F}
 y <- solve_fun(x, times, initState = initState,
                outnames = Outputs, dllname = mName)
 tell2(x,y)
@@ -183,13 +188,13 @@ tell2(x,y)
 
 To create the time-dependent sensitivity measurement, we set the time duration from 0.01 to 24.01 hours in the example. The `initParmsfun` is used to generate the sampling value for each parameter. The `outnames`, `dllname`, `func`, `initfunc` are based on the arguments from the ode function in `deSolve` package. The details of the model structure and these arguments are defined in `pbtk1comp.c`. and `pbtk1comp_inits.R`. Finally, the `tell2` function is used to integrate the parameter values and the output results of numerical analysis that were generated and stored in variables x and y. The result of object x is an object of rfast99, which has specific `print`, `plot`, and `check` method. The print function gives the sensitivity and convergence indices for main, interaction, and total order at each time point. In addition to print out the result of sensitivity analysis, the more efficient way to distinguish the influence of model parameter is to visualize them. The time-dependent sensitivity indices are shown in Figure 2. 
 
-```{r, eval=T, fig.cap = 'Figure 2. Time-dependent sensitivity indices of the plasma concentration estimated from one-compartment PBTK model during 24 hour time period intake.'}
+```{r, eval=F, fig.cap = 'Figure 2. Time-dependent sensitivity indices of the plasma concentration estimated from one-compartment PBTK model during 24 hour time period intake.'}
 plot(x)
 ```
 
 Here, we can find that `vdist` and `ke` are dominating the plasma concentration in the before and after 5-hour post chemical intake, respectively, representing that the elimination is a key parameter to dominate the plasma concentration. Besides, the `kgutabs` only plays a crucial role to determine the plasma concentration in the first hour. The relationship between concentration and the parameters can be plotted as follow (Figure 3): 
 
-```{r, eval=T, fig.cap = 'Figure 3. The relationship between model parameter and estimated concentration under the time-point of 0.01, 2.01, and 24.01 hr'}
+```{r, eval=F, fig.cap = 'Figure 3. The relationship between model parameter and estimated concentration under the time-point of 0.01, 2.01, and 24.01 hr'}
 par(mfrow = c(3,3), mar = c(2,2,2,2), oma = c(2,2,1,1))
 plot(x$a[,1,"vdist"], y[,1,"0.01",], main = "vdist")
 text(1, .7, "t=0.01",cex = 1.2)
@@ -209,19 +214,19 @@ mtext("Ccompartment", WEST<-2, line=0.4, outer=TRUE)
 
 The x is a list of class "rfast99", containing all the input arguments detailed before and the calculated sensitivity indices of first order (`mSI`), interaction (`iSI`), and total order (`tSI`). The convergence indices are also stored in the list named `mCI`, `iCI`, and `tCI`. The parameter values are stored in an array `x$a` with c(model evaluation, replication, parameters).
 
-```{r, eval=T}
+```{r, eval=F}
 dim(x$a)
 ```
 
 In addition, the output are also formated with c(model evaluation, replication, time, variable).
 
-```{r, eval=T}
+```{r, eval=F}
 dim(y)
 ```
 
 The `check()` is a useful function to determine which parameters have relative lower sensitivity measurement across the given time interval, and therefore can be applied parameter fixing in model calibration. The argument of `SI.cutoff` is setting at 0.5 to detect the relative non-influential parameters in this case. 
 
-```{r, eval=T}
+```{r, eval=F}
 check(x, SI.cutoff = 0.5)
 ```
 
@@ -231,18 +236,18 @@ Based on the sensitivity measurement of the total order, the result shows that `
 
 Alternatively, to solve ODE by using GNU MCSim, we need to change the argument to `application = mcsim` in `compile_model()`. Rather than apply R `deSolve` to solve differential equations, the GNU MCSim can provide higher computational speed in global sensitivity analysis.
 
-```{r, eval=T}
+```{r, eval=F}
 system.time(y<-solve_fun(x, times, initState = initState, 
                          outnames = Outputs, dllname = mName))
 ```
 
-```{r, eval=T}
+```{r, eval=F}
 compile_model(mName, application = "mcsim")
 ```
 
 Sililiar to `solve_fun` that can define the initial parameter and state values through input function, the `solve_mcsim` has a `condition` argument that is used to givien the specific input value such as oral dose or fixing parameter value or initial state variable.
 
-```{r, eval=T}
+```{r, eval=F}
 conditions <- c("Agutlument = 10") # Set the initial state of Agutlument = 10 
 system.time(y<-solve_mcsim(x, mName = mName, 
                            params = params,
@@ -263,7 +268,7 @@ The aim of this section is to reproduce our previous published [@fphar201800588]
 
 Same as the example of one-compartment PBTK model. The model parameter and the corresponding sampling range should be defined to create the parameter matrix. Previously, the probability distributions of model parameters were set to either truncated normal or uniform distribution when the parameters have informative prior information or not. To rapidly reach the acceptance convergence, we apply uniform distribution for all testing parameters. The ranges of informative parameters are set to 1.96-times difference for single side (approximate 54.6 times difference between minimum and maximum) under log-scaled. The nominal values of informative model parameters were defined as:
 
-```{r, eval=T}
+```{r, eval=F}
 # Nominal value
 Tg <- log(0.23)
 Tp <- log(0.033)
@@ -284,7 +289,7 @@ Generally, The wide range of parameter value might cause the computational error
 
 In this test case, we adjusted the range of `SULT_VmaxC` and `UGT_VmaxC` from U(0, 15) to U(0, 10). The relative and absolute error tolerance were set to 1e-7 and 1e-9, respectively, to prevent the computational error in MCSim,
 
-```{r, eval=T}
+```{r, eval=F}
 params <- c("lnTg", "lnTp", "lnCYP_Km","lnCYP_VmaxC",
            "lnSULT_Km_apap","lnSULT_Ki","lnSULT_Km_paps","lnSULT_VmaxC",
            "lnUGT_Km","lnUGT_Ki","lnUGT_Km_GA","lnUGT_VmaxC",
@@ -320,7 +325,7 @@ x <- rfast99(params = params, n = 512, q = q, q.arg = q.arg, replicate = 10)
 
 After creating the `pbpk_apap.model` in the working directory, the next step is to generate the executable files (`mcsim.pbpk_apap`) through `compile_model()`. 
 
-```{r, eval=T}
+```{r, eval=F}
 mName <- "pbpk_apap"
 pbpk_apap_model()
 compile_model(mName, application = "mcsim")
@@ -328,7 +333,7 @@ compile_model(mName, application = "mcsim")
 
 To improve the computational speed, this case only uses MCSim to estimate the concentration of acetaminophen (APAP) and its metabolites glucuronide (AG) and sulfate (AS) in plasma. The setting oral dose of APAP is 20 mg/kg in this example. Generally, the input dosing method can be defined through the `condition` argument. Since the unit of the given dose is mg/kg, the `mgkg_flag` is set to 1 to declare the statement. More definition of input can be found in the section of input functions in GNU MCSim User’s Manual (https://www.gnu.org/software/mcsim/mcsim.html#Input-functions).
 
-```{r, eval=T}
+```{r, eval=F}
 vars <- c("lnCPL_APAP_mcgL", "lnCPL_AG_mcgL", "lnCPL_AS_mcgL")
 conditions <- c("mgkg_flag = 1",
                 "OralExp_APAP = NDoses(2, 1, 0, 0, 0.001)",
@@ -349,13 +354,13 @@ tell2(x,y)
 
 The plotting function can output the result of time-dependent sensitivity measurement to determine the parameter impact on model output over time (Figure 1). 
 
-```{r, eval=T, fig.height=8, fig.width=8, fig.cap = 'Figure 4. '}
+```{r, eval=F, fig.height=8, fig.width=8, fig.cap = 'Figure 4. '}
 plot(x, vars = "lnCPL_AG_mcgL")
 ```
 
 The uncertainty analysis is a crucial step before model calibration. We can apply uncertainty analysis through the `pksim()` by the given name of output variables (Figure 2). Through this visualization approach, we can recognize whether the simulated outputs can accurately simulate the same concentration profile as the in-vivo experiment under the setting of parameter ranges. In Figure 2, all experiment points are included in the intervals, representing the acceptable set of the parameter range. 
 
-```{r, eval=T, fig.cap = 'Figure 5. '}
+```{r, eval=F, fig.cap = 'Figure 5. '}
 par(mfrow = c(2,2), mar = c(2,2,1,1), oma = c(2,2,1,1))
 pksim(y, vars = "lnCPL_APAP_mcgL")
 text(1, 15, "APAP",cex = 1.2)
@@ -372,13 +377,13 @@ mtext("Conc.", WEST<-2, line=0.4, cex=1.2, outer=TRUE)
 
 In addition, through using the `check()`, the parameter with sensitivity and convergence indices over the given condition can be easily detected for all output variables.
 
-```{r, eval=T}
+```{r, eval=F}
 check(x)
 ```
 
 The `check()` also provides some feasible argument to specify the target output or change the cut-off value.
 
-```{r, eval=T}
+```{r, eval=F}
 check(x, vars = "lnCPL_APAP_mcgL", SI.cutoff = 0.1, CI.cutoff = 0.1)
 ```
 
@@ -386,17 +391,17 @@ check(x, vars = "lnCPL_APAP_mcgL", SI.cutoff = 0.1, CI.cutoff = 0.1)
 
 Based on our previous study, we proposed the heatmap visualization approach to distinguish "influential" and "non-influential" parameters with a cut-off. Through the given argument `order`, we can select the specific order of sensitivity measurement that we're interested in (Figure 3 & 4). 
 
-```{r, eval=T}
+```{r, eval=F}
 heat_check(x, order = "interaction")
 ```
 
-```{r, eval=T}
+```{r, eval=F}
 heat_check(x, order = "total order")
 ```
 
 Also, adding the `index = "CI"` in the function can further investigate the convergence of the sensitivity index. Based on the current setting of sampling number, most parameters cannot reach the acceptable criteria of convergence. Therefore, the higher number of sampling is necessary.
 
-```{r, eval=T, fig.height=9}
+```{r, eval=F, fig.height=9}
 heat_check(x, index = "CI", CI.cutoff = 0.05)
 ```
 
@@ -415,3 +420,7 @@ Don't use markdown, instead use the more precise latex commands:
 This work was funded, in part, by grant 1U01FD005838 from the U.S. FDA.  This abstract reflects the views of the author and should not be construed to represent FDA’s views or policies. We thank Dr. Yasha Hartberg and Dr. Barbara Gastel at the Texas A&M University for reviewing the manuscript and consultation.
 
 # References
+
+```{r, include=FALSE}
+knitr::write_bib(c('sensitivity'))
+```
