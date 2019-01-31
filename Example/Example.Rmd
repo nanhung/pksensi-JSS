@@ -33,7 +33,7 @@ output: rticles::jss_article
 
 [@R-sensitivity]
 
-* This is what I wany to show in the paper
+* This is what I want to show in the paper
 
 [@R-sensitivity]
 
