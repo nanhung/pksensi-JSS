@@ -2,3 +2,14 @@
 .Rhistory
 .RData
 .Ruserdata
+*.in
+*.csv
+*.c
+*.model
+*.o
+*.so
+*.dat
+*.html
+mcsim.*
+manuscript/manuscript_files/*
+manuscript/pbtk1cpt_inits.R
