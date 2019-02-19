@@ -2,6 +2,8 @@
 author:
   - name: Nan-Hung Hsieh
     affiliation: Texas A&M University
+  - name: Frederic Y. Bois
+    affiliation: INERIS 
   - name: Brad Reisfeld
     affiliation: Colorado State University 
   - name: Weihsueh A. Chiu
