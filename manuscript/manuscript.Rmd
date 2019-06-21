@@ -2,8 +2,6 @@
 author:
   - name: Nan-Hung Hsieh
     affiliation: Texas A&M University
-  - name: Frederic Y. Bois
-    affiliation: INERIS 
   - name: Brad Reisfeld
     affiliation: Colorado State University 
   - name: Weihsueh A. Chiu
@@ -86,7 +84,7 @@ knitr::opts_chunk$set(
 
 ### Equations
 
-In this example, We use a simple, one-compartment PK model from \pkg{httk} package \citep{JSSv079i04} to demonstrate how \pkg{pksensi} can be applied to pharmacokinetic studies. The differential equations for the one-compartment pharmacokinetic model can be written as:
+In this example, we use a simple, one-compartment PBTK model from \pkg{httk} package \citep{JSSv079i04} to demonstrate how \pkg{pksensi} can be applied to physiologically based kinetic studies. The differential equations for this model is as:
 
 $$\frac{dA_{gutlumen}}{dt} = -k_{gutabs} \cdot A_{gutlumen} + g(t)$$
 $$\frac{dC_{rest}}{dt} = \frac{k_{gutabs}}{V_{dist}}-k_{elim} \cdot C_{rest}$$
@@ -95,18 +93,16 @@ where $A_{gutlumen}$ is the state variable that describes the quantity of compou
 
 ### Model implementations with R deSolve package
 
-In the beginning, we need to pre-install \pkg{GNU MCSim} \citep{JSSv002i09} and related compiler to let us generate .c file and executable file. The \pkg{GNU MCSim} can be installed by following the instruction in \pkg{GNU MCSim}’s manual on https://www.gnu.org/software/mcsim/mcsim.html or using the build-in function \code{mcsim_install()} in \pkg{pksensi}. The GNU compiler is necessary for users that use Linux or MacOS. For Windows users, you should install Rtools on https://cran.r-project.org/bin/windows/Rtools/ and use \code{Sys.setenv()} to set the working path of compiler. In \proglang{R} environment, The  \code{Sys.which("gcc")} and \code{system('g++ -v')} can check whether we can run compiler correctly. 
+In the beginning, we need to pre-install \pkg{GNU MCSim} \citep{JSSv002i09} and related standard C compiler. The \pkg{GNU MCSim} can be installed by following the instruction in \pkg{GNU MCSim}’s manual on https://www.gnu.org/software/mcsim/mcsim.html or using the build-in function \code{mcsim_install()} in \pkg{pksensi}. The C compiler had installed in Linux or MacOS. The Windows user can install Rtools on https://cran.r-project.org/bin/windows/Rtools/ and set the working path of compiler before using this function. 
 
-We first implemented this model in \proglang{R} by compiling the file written in \proglang{C}. \pkg{pksensi} allows users to select the preferred method to solve the pharmacokinetic model, either with the pkg{deSolve} package or with \pkg{GNU MCSim} through the compile function. However, running model under \pkg{GNU MCSim} native code can have faster speed to obtain the model outputs.
+We first implemented one-compartment TK model in \proglang{R} by compiling the file written under the \pkg{GNU MCSim}'s model format. \pkg{pksensi} allows users select the preferred method to solve the pharmacokinetic model, either with the \pkg{deSolve} package or with \pkg{GNU MCSim} through the compile function. Running model under \pkg{GNU MCSim} native code can have faster speed to obtain the model outputs. This section demo how to conduct global sensitivity analysis with \pkg{deSolve} package. Then compare the computer time with \pkg{MCSim}.
 
-The following \proglang{R} script can download and compile the model description file \code{pbtk1cpt.model} and use code{ode} function in \pkg{deSolve} package \citep{JSSv033i09} to solve ordinary differential equations in our model. The example model code of one-compartment PBTK model is available with \pkg{pksensi} package:
-
+The following \proglang{R} script will download the one-compartment PBTK model from https://github.com/nanhung/pksensi/blob/master/tests/1cpt.model:
 ```{r, eval=T}
 pbtk1cpt_model()
-cat(readLines("pbtk1cpt.model"), sep = "\n")
 ```
 
-Then, use \code{compile_model()} to generate the executable files (\code{pbtk1cpt.dll} on Windows or \code{pbtk1cpt.so} on other systems) and \proglang{R} file (\code{pbtk1cpt_inits.R}) with default input parameters and initial state settings with the definition of \code{application = "R"}. 
+After create the model file, use \code{compile_model()} to generate the file that has dynamic-link library (DLL) or share object (SO) extention and can be linked dynamically into an R session (\code{pbtk1cpt.dll} on Windows or \code{pbtk1cpt.so} on other systems) and \proglang{R} file (\code{pbtk1cpt_inits.R}) with default input parameters and initial state settings with the definition of \code{application = "R"}. 
 
 ```{r, eval=T}
 mName <- "pbtk1cpt"
@@ -118,12 +114,14 @@ The parameter values and initial states can be customized to specify the propert
 
 ```{r, eval=T}
 parms <- initParms()
-parms["vdist"] <- 0.74
-parms["ke"] <- 0.28
+parms["vdist"] <- 6.13
+parms["ke"] <- 0.0228
 parms["kgutabs"] <- 2.18
 initState <- initStates(parms=parms)
 initState["Agutlument"] <- 10
 ```
+
+Here shows the giveb parameter value (\code{parms}), initial state conditions (\code{initStat}), and the output variable (\code{Outputs}) that need to specify in model solving.
 
 ```{r, eval=T}
 parms
@@ -137,7 +135,7 @@ initState
 Outputs
 ```
 
-In the current setting, we assumed the initial condition of the intake chemical to be 10 mol. The \code{initParms} and \code{initStates} functions were used to customize the parameter values and the initial state that will be used in the \code{solve_fun()} function. These parameter value can be adopted from the \pkg{httk} package, which includes physico-chemical and drug biological properties for over 500 chemicals. In this case, we used the parameter value of theophylline in this example. The given \code{vdist}, \code{ke}, and \code{kgutabs} are 0.74, 0.28, and 2.18, respectively.
+In the current setting, we assumed the initial condition of the intake chemical to be 10 mol. The \code{initParms} and \code{initStates} functions were used to customize the parameter values and the initial state that will be used in the \code{solve_fun()} function. These parameter value can be refered from the \pkg{httk} package, which includes physico-chemical and drug biological properties for over 500 chemicals. In this case, we used the parameter value of Bisphenol A in this example. The given \code{vdist}, \code{ke}, and \code{kgutabs} are 0.74, 0.28, and 2.18, respectively.
 
 Through \code{ode} function in \pkg{deSolve} package, we can visualize the pharmacokinetic according to the given parameter conditions such as time points (\code{times}):
 
@@ -148,11 +146,11 @@ y <- ode(initState, times, func = "derivs", parms = parms,
          dllname = mName, initfunc = "initmod", nout = 1, outnames = Outputs)
 ```
 
-```{r, eval=T, fig.cap = 'Figure 1. Simulation results of one-compartment PBTK model.'}
+```{r, eval=T, fig.cap = 'Simulation results of one-compartment PBTK model.'}
 plot(y)
 ```
 
-To conduct sensitivity analysis for the parameters in one-compartment pharmacokinetic model in this case, we want to quantify the impact of these three parameters on the chemical concentration in plasma during 24-hour time period post intake. We assume a uniform distribution for the estimate for each parameter with the coefficient of uncertainty within 50%. The parameter ranges are assumed to be (0.37, 1.12) for \code{vdist}, (0.0058, 0.0174) for \code{ke}, and (0.045, 0.136) for \code{kgutabs}. The sample number determines the robustness of the result of sensitivity analysis. Higher sample numbers can generate narrow confidence intervals for sensitivity measurements across different replications. However, they might cause heavy computational burden for complex models. Here we use a sample number of 400 with 20 replications:
+To conduct sensitivity analysis for the parameters in one-compartment pharmacokinetic model in this case, we aim to quantify the impact of these three parameters on the chemical concentration in plasma during 24-hour time period post intake. We assume a uniform distribution for the estimate for each parameter with the coefficient of uncertainty within 50%. The parameter ranges are assumed to be (0.37, 1.12) for \code{vdist}, (0.0058, 0.0174) for \code{ke}, and (0.045, 0.136) for \code{kgutabs}. The sample number determines the robustness of the result of sensitivity analysis. Higher sample numbers can generate narrow confidence intervals for sensitivity measurements across different replications. However, they might cause heavy computational burden for complex models. Here we use a sample number of 400 with 20 replications:
 
 ```{r, eval=T}
 LL <- 0.5 
@@ -169,33 +167,32 @@ x <- rfast99(params, n = 200, q = q, q.arg = q.arg, replicate = 20)
 Because the pharmacokinetic model is being used to describe a continuous process for the chemical concentration over time, the sensitivity measurements can also show the time-dependent relationships for each model parameter. Here we define the output time points to examine the change of the parameter sensitivity over time. To solve the pharmacokinetic model through deSolve, we need to provide the details of the argument: 
 
 ```{r, eval=T}
-y <- solve_fun(x, times, initState = initState,
+out <- solve_fun(x, times, initState = initState,
                outnames = Outputs, dllname = mName)
-tell2(x,y)
 ```
 
 To create the time-dependent sensitivity measurement, we set the time duration from 0.01 to 24.01 hours in the example. The \code{initParmsfun} is used to generate the sampling value for each parameter. The \code{outnames}, \code{dllname}, \code{func}, \code{initfunc} are based on the arguments from the ode function in \pkg{deSolve} package. The details of the model structure and these arguments are defined in \code{pbtk1comp.c}. and \code{pbtk1comp_inits.R}. Finally, the \code{tell2()} function is used to integrate the parameter values and the output results of numerical analysis that were generated and stored in variables x and y. The result of object x is an object of rfast99, which has specific \code{print()}, \code{plot()}, and \code{check()} method. The print function gives the sensitivity and convergence indices for main, interaction, and total order at each time point. In addition to print out the result of sensitivity analysis, the more efficient way to distinguish the influence of model parameter is to visualize them. The time-dependent sensitivity indices are shown in Figure 2. 
 
 ```{r, eval=T, fig.cap = 'Figure 2. Time-dependent sensitivity indices of the plasma concentration estimated from one-compartment PBTK model during 24-hour time period intake.'}
-plot(x)
+plot(out)
 ```
 
 Here, we can find that \code{vdist} and \code{ke} are dominating the plasma concentration in the before and after 5-hour post chemical intake, respectively, representing that the elimination is a key parameter to dominate the plasma concentration. Besides, the \code{kgutabs} only plays a crucial role to determine the plasma concentration in the first hour. The relationship between concentration and the parameters can be plotted as follow (Figure 3): 
 
 ```{r, eval=T, fig.cap = 'Figure 3. The relationship between model parameter and estimated concentration under the time-point of 0.01, 2.01, and 24.01 hr'}
 par(mfrow = c(3,3), mar = c(2,2,2,2), oma = c(2,2,1,1))
-plot(x$a[,1,"vdist"], y[,1,"0.01",], main = "vdist")
+plot(x$a[,1,"vdist"], out$y[,1,"0.01",], main = "vdist")
 text(1, .7, "t=0.01",cex = 1.2)
-plot(x$a[,1,"ke"], y[,1,"0.01",], main = "ke")
-plot(x$a[,1,"kgutabs"], y[,1,"0.01",], main = "kgutabs")
-plot(x$a[,1,"vdist"], y[,1,"2.01",])
+plot(x$a[,1,"ke"], out$y[,1,"0.01",], main = "ke")
+plot(x$a[,1,"kgutabs"], out$y[,1,"0.01",], main = "kgutabs")
+plot(x$a[,1,"vdist"], out$y[,1,"2.01",])
 text(1, 18, "t=2.01",cex = 1.2)
-plot(x$a[,1,"ke"], y[,1,"2.01",])
-plot(x$a[,1,"kgutabs"], y[,1,"2.01",])
-plot(x$a[,1,"vdist"], y[,1,"24.01",])
+plot(x$a[,1,"ke"], out$y[,1,"2.01",])
+plot(x$a[,1,"kgutabs"], out$y[,1,"2.01",])
+plot(x$a[,1,"vdist"], out$y[,1,"24.01",])
 text(1, .7, "t=24.01",cex = 1.2)
-plot(x$a[,1,"ke"], y[,1,"24.01",])
-plot(x$a[,1,"kgutabs"], y[,1,"24.01",])
+plot(x$a[,1,"ke"], out$y[,1,"24.01",])
+plot(x$a[,1,"kgutabs"], out$y[,1,"24.01",])
 mtext("parameter", SOUTH<-1, line=0.4, outer=TRUE)
 mtext("Ccompartment", WEST<-2, line=0.4, outer=TRUE)
 ```
@@ -209,13 +206,13 @@ dim(x$a)
 In addition, the output are also formated with c(model evaluation, replication, time, variable).
 
 ```{r, eval=T}
-dim(y)
+dim(out$y)
 ```
 
 The \code{check()} is a useful function to determine which parameters have relative lower sensitivity measurement across the given time interval, and therefore can be applied parameter fixing in model calibration. The argument of \code{SI.cutoff} is setting at 0.5 to detect the relative non-influential parameters in this case. 
 
 ```{r, eval=T}
-check(x, SI.cutoff = 0.5)
+check(out, SI.cutoff = 0.5)
 ```
 
 Based on the sensitivity measurement of the total order, the result shows that \code{kgutabs} has relative lower measurement of sensitivity index.
@@ -225,7 +222,7 @@ Based on the sensitivity measurement of the total order, the result shows that \
 Alternatively, to solve ODE by using \pkg{GNU MCSim}, we need to change the argument to \code{application = mcsim} in \code{compile_model()}. Rather than apply \pkg{deSolve} to solve differential equations, the \pkg{GNU MCSim} can provide higher computational speed in global sensitivity analysis.
 
 ```{r, eval=T}
-system.time(y<-solve_fun(x, times, initState = initState, 
+system.time(out<-solve_fun(x, times, initState = initState, 
                          outnames = Outputs, dllname = mName))
 ```
 
@@ -237,7 +234,7 @@ Similar to \code{solve_fun()} function that can define the initial parameter and
 
 ```{r, eval=T}
 conditions <- c("Agutlument = 10") # Set the initial state of Agutlument = 10 
-system.time(y<-solve_mcsim(x, mName = mName, 
+system.time(out <- solve_mcsim(x, mName = mName, 
                            params = params,
                            vars = Outputs,
                            time = times,
@@ -409,32 +406,31 @@ generate_infile(params = params,
                 time = times, 
                 condition = conditions,
                 rtol = 1e-7, atol = 1e-9)
-system.time(y <- solve_mcsim(x, mName = mName, 
+system.time(out <- solve_mcsim(x, mName = mName, 
                              params = params,
                              vars = vars,
                              time = times,
                              condition = conditions,
                              generate.infile = F))
-tell2(x,y)
 ```
 
 The plotting function can output the result of time-dependent sensitivity measurement to determine the parameter impact on model output over time (Figure 4). 
 
 ```{r, eval=T, fig.height=8, fig.width=8, fig.cap = ' '}
-plot(x, vars = "lnCPL_AG_mcgL")
+plot(out, vars = "lnCPL_AG_mcgL")
 ```
 
 The uncertainty analysis is a crucial step before model calibration. We can apply uncertainty analysis through the `pksim()` by the given name of output variables (Figure 5). Through this visualization approach, we can recognize whether the simulated outputs can accurately simulate the same concentration profile as the in-vivo experiment under the setting of parameter ranges. In Figure 5, all experiment points are included in the intervals, representing the acceptable set of the parameter range. 
 
 ```{r, eval=T, fig.cap = ' '}
 par(mfrow = c(2,2), mar = c(2,2,1,1), oma = c(2,2,1,1))
-pksim(y, vars = "lnCPL_APAP_mcgL")
+pksim(out$y, vars = "lnCPL_APAP_mcgL")
 text(1, 15, "APAP",cex = 1.2)
 points(APAP$Time, log(APAP$APAP * 1000))
-pksim(y, vars = "lnCPL_AG_mcgL", legend = F)
+pksim(out$y, vars = "lnCPL_AG_mcgL", legend = F)
 text(1, 15, "AG",cex = 1.2)
 points(APAP$Time, log(APAP$AG * 1000))
-pksim(y, vars = "lnCPL_AS_mcgL", legend = F)
+pksim(out$y, vars = "lnCPL_AS_mcgL", legend = F)
 text(1, 15, "AS",cex = 1.2)
 points(APAP$Time, log(APAP$AS * 1000))
 mtext("Time", SOUTH<-1, line=0.4, cex=1.2, outer=TRUE)
@@ -444,13 +440,13 @@ mtext("Conc.", WEST<-2, line=0.4, cex=1.2, outer=TRUE)
 In addition, through using the \code{check()}, the parameter with sensitivity and convergence indices over the given condition can be easily detected for all output variables.
 
 ```{r, eval=T}
-check(x)
+check(out)
 ```
 
 The \code{check()} also provides some feasible argument to specify the target output or change the cut-off value.
 
 ```{r, eval=T}
-check(x, vars = "lnCPL_APAP_mcgL", SI.cutoff = 0.1, CI.cutoff = 0.1)
+check(out, vars = "lnCPL_APAP_mcgL", SI.cutoff = 0.1, CI.cutoff = 0.1)
 ```
 
 ### Heatmap visualization combined with an index “cut-off”
@@ -458,17 +454,17 @@ check(x, vars = "lnCPL_APAP_mcgL", SI.cutoff = 0.1, CI.cutoff = 0.1)
 Based on our previous study, we proposed the heatmap visualization approach to distinguish "influential" and "non-influential" parameters with a cut-off. Through the given argument \code{order}, we can select the specific order of sensitivity measurement that we're interested in (Figure 6 & 7). 
 
 ```{r, eval=T, fig.cap = ' '}
-heat_check(x, order = "interaction")
+heat_check(out, order = "interaction")
 ```
 
 ```{r, eval=T, fig.cap = ' '}
-heat_check(x, order = "total order")
+heat_check(out, order = "total order")
 ```
 
 Also, adding the `index = "CI"` in the function can further investigate the convergence of the sensitivity index. Based on the current setting of sampling number, most parameters cannot reach the acceptable criteria of convergence (Figure 8). Therefore, the higher number of sampling is necessary.
 
 ```{r, eval=T, fig.cap = ' '}
-heat_check(x, index = "CI", CI.cutoff = 0.05, order = "total order")
+heat_check(out, index = "CI", CI.cutoff = 0.05, order = "total order")
 ```
 
 # Concluding remarks
