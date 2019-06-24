@@ -323,7 +323,7 @@ After soving the equations under the same given condition, we can find that (\pk
 
 ### Uncertainty and sensitivity analysis
 
-The aim of this section is to reproduce our previous published result \citep{fphar201800588} of global sensitivity analysis for acetaminophen PBPK model through \pkg{pksensi}. The model codes are included in this package and can be generated through \code{pbpk_apap_model()}. We applied the global sensitivity analysis workflow to the original published model with 21 model parameters [@s13318-015-0253-x]. The descriptions of each parameter and the sampling ranges are list in Table 1.
+The aim of this section is to reproduce our previous published result \citep{fphar201800588} of global sensitivity analysis for acetaminophen PBPK model through \pkg{pksensi}. The model codes are included in this package and can be generated through \code{pbpk_apap_model} function. We applied the global sensitivity analysis workflow to the original published model with 21 model parameters [@s13318-015-0253-x]. The descriptions of each parameter and the sampling ranges are list in Table 1.
 
 ```{r, results='asis',message=FALSE,warning=FALSE, echo = F}
 library(xtable)
@@ -467,7 +467,7 @@ After creating the \code{pbpk_apap.model} file in the working directory, the nex
 ```{r, eval=T}
 mName <- "pbpk_apap"
 pbpk_apap_model()
-compile_model(mName, application = "mcsim")
+compile_model(mName, application = "mcsim", version = "6.1.0")
 ```
 
 To improve computational speed, this case only uses \pkg{GNU MCSim} to estimate the concentration of acetaminophen (APAP) and its metabolites glucuronide (AG) and sulfate (AS) in plasma. The setting oral dose of APAP is 20 mg/kg in this example. Generally, the input dosing method can be defined through the \code{condition} argument. Since the unit of the given dose is mg/kg, the \code{mgkg_flag} is set to 1 to declare the statement. More definition of input functions can be found in the section of input functions in \pkg{GNU MCSim} User’s Manual (https://www.gnu.org/software/mcsim/mcsim.html#Input-functions).
@@ -554,3 +554,4 @@ This work was funded, in part, by grant 1U01FD005838 from the U.S. FDA.  This ar
 ```{r, include=FALSE}
 knitr::write_bib(c('sensitivity','FME', 'multisensi', 'ODEsensitivity', 'fast'))
 ```
+
