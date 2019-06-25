@@ -554,8 +554,14 @@ heat_check(out, index = "CI", order = "total order")
 
 # Concluding remarks
 
-The \pkg{GNU MCSim} is the powerful simulation package, that can conduct various dynamical simulations for biological modeling, and is mainly build for pharmacokinetic research with probabiliistic approaches [@bois2009gnu]. The \Proglang{R} is a comprehensive statistical computing language that can conduct the probabilistic programming and have tons of packages in statitical analysis and data visualization. In dynamic simulation, .
+The \pkg{GNU MCSim} is a powerful simulation software package, that can conduct various dynamical simulations for biological-based modeling, and it's mainly built for pharmacokinetic research with probabilistic approaches [@bois2009gnu]. The \Proglang{R} is a comprehensive statistical computing language that can conduct probabilistic programming and have tons of packages for statistical analysis and data visualization.  Some fundamental packages on the CRAN repository and other software platforms hasd been built to perform different types of global sensitivity analysis. The development of \pkg{pksensi} is mainly for physiologically based kinetic models that are constructed by differential equations. It provides a straightforward application to investigate the impact of parameters on model output across time and variables. We adopted the eFSAT method, a common variance-based approach and had better efficiency and accuracy in the model assessment. 
 
+
+in \pkg{pksensi} 
+
+
+
+  have the developed solver to solve the differential equation in dynamic simulation. 
 
 
 The dosing schedule 
@@ -564,7 +570,6 @@ Some studies applied another GSA algorithm in the physiologically and biological
 
 Principle component
 
-parallel
 
 # Acknowledgments
 
