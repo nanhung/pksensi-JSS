@@ -131,7 +131,7 @@ where $V_{dist}$ is the volume of distribution (L/kg BW) and $BW$ is the body we
 
 ### Model implementations with R deSolve package
 
-To start, we implemented the one-compartment PK model in \proglang{R} by compiling the file written under the \pkg{GNU MCSim}'s model format. \pkg{pksensi} allows users select the preferred method to solve the pharmacokinetic model, either with the \pkg{deSolve} package or with \pkg{GNU MCSim} through the compile function. Running model under \pkg{GNU MCSim} native code can have a faster speed to obtain the model outputs. This section mainly focus on how to conduct global SA with \pkg{deSolve} package. Then compare the computing time with \pkg{MCSim}.
+To start, we implemented the one-compartment PK model in \proglang{R} by compiling the file written under the \pkg{GNU MCSim}'s model format. \pkg{pksensi} allows users select the preferred method to solve the pharmacokinetic model, either with the \pkg{deSolve} package or with \pkg{GNU MCSim} through the compile function. Running model under \pkg{GNU MCSim} native code can have a faster speed to obtain the model outputs. This section mainly focus on how to conduct global SA with \pkg{deSolve} package. Then compare the computing time with \pkg{GNU MCSim}.
 
 The following \proglang{R} script will download the one-compartment PK model from https://github.com/nanhung/pksensi/blob/master/tests/pbtk1cpt.model. The model mainly includes two state variables that are the quantity of compound in the gut lumen (\code{Agutlument}) and the rest of body (\code{Acompartmant}). The \code{Ametabolized} is the quantity of compound transform and metabolize through hepatic clearance. The \code{AUC} is the calculated area under the curve of the rest body ($mg \cdot h/L$).
 
@@ -182,7 +182,7 @@ Outputs
 ```
 
 
-Using the \code{ode} function in \pkg{deSolve} package, we can visualize the pharmacokinetic profile (Figure \ref{fig:ode-PK}) according to the given parameter baseline and the time points (\code{t}):
+Using the \code{ode} function in \pkg{deSolve} package, we can visualize the pharmacokinetic profile (Figure \ref{fig:ode-PK}) according to the given parameter baseline and the time points (\code{t}).
 
 ```{r, eval=T}
 t <- seq(from = 0.01, to = 24.01, by = 1)
@@ -195,7 +195,7 @@ y <- deSolve::ode(initState, t, func = "derivs", parms = parms,
 plot(y)
 ```
 
-We conduct global SA for the four parameters in one-compartment PK model to investigate the parameter impact on the plasma concentration during the 24-hr time period post intake. The distribution of parameter is taken to be uniform with bounds corresponding to 50% and 200% of the nominal value. Therefore, the parameter ranges are assumed to be 0.55 and 2.2 L/kg BW for \code{vdist}. The \code{ke} are ranged from 0.12 to 0.46 /h, corresponding to half-times of 1.5 and 5.8 hr. The \code{ka} are ranged 1.09 to 4.36 /h, corresponding to half-times of 0.32 and 0.64 hr. The $BW$ is assumed to a normal distribution with mean = 60 kg and sd = 5 kg. The number of sample size determines the robustness of the result of SA. Higher number of sample size lead to narrower confidence intervals for sensitivity measurements across different replications. However, it will take a longer time in computation. Here we use a sample size of 200 with 20 replications.
+We conduct global SA for the four parameters in one-compartment PK model to investigate the parameter impact on the plasma concentration during the 24-hr time period post intake. The distribution of parameter is taken to be uniform with bounds corresponding to 50% and 200% of the nominal value. Therefore, the parameter ranges are assumed to be 0.55 and 2.2 L/kg BW for \code{vdist}. The \code{ke} are ranged from 0.12 to 0.46 /h, corresponding to half-times of 1.5 and 5.8 hr. The \code{ka} are ranged 1.09 to 4.36 /h, corresponding to half-times of 0.32 and 0.64 hr. The \code{BW} is assumed to a normal distribution with mean = 60 kg and sd = 5 kg. The number of sample size determines the robustness of the result of SA. Higher number of sample size lead to narrower confidence intervals for sensitivity measurements across different replications. However, it will take a longer time in computation. Here we use a sample size of 200 with 20 replications.
 
 ```{r, eval=T}
 q <- c("qunif", "qunif", "qunif", "qnorm")
@@ -257,7 +257,7 @@ Here, we can see (Figure \ref{fig:pk-solvefun-rest}) that \code{vdist} and \code
 
 The default output in the plotting is setting at the first variable. To exam the time-sependent SI of other variables, such as \code{Ametabolized} in this case, we need to assign the variable name \code{vars = "Ametabolized"} in \code{plot} function (Figure \ref{fig:pk-solvefun-Amet}).
 
-```{r, eval=T, fig.cap = '\\label{fig:pk-solvefun-Amet}Time-dependent SI of the plasma concentration estimated from one-compartment PK model during 24-hr time period intake..'}
+```{r, eval=T, fig.cap = '\\label{fig:pk-solvefun-Amet}Time-dependent SI of the plasma concentration estimated from one-compartment PK model during 24-hr time period intake.'}
 plot(out, vars = "Ametabolized")
 ```
 
@@ -488,7 +488,7 @@ We apply uncertainty analysis through the \code{solve_mcsim} and visualize the r
 head(APAP)
 ```
 
-In the setting condition of simulation, The relative and absolute error tolerance (\code{rtol} & \code{atol}) were set to 1e-7 and 1e-9, respectively, to prevent the computating error. The Monte Carlo simulation is run for 1000 iteration as the assignment of \code{monte_carlo}. The input file ('sim.in') and output file ('simmc.out') will be generated under the standard ASCII format. 
+In the setting condition of simulation, The relative and absolute error tolerance (\code{rtol} & \code{atol}) were set to 1e-7 and 1e-9, respectively, to prevent the computing error. The Monte Carlo simulation is run for 1000 iteration as the assignment of \code{monte_carlo}. The input file ('sim.in') and output file ('simmc.out') will be generated under the standard ASCII format. 
 
 ```{r}
 set.seed(1111)
