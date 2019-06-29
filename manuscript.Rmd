@@ -11,11 +11,11 @@ author:
       College Station, TX 77843, USA
     email: \email{wchiu@cvm.tamu.edu}  
 title:
-  formatted: "\\pkg{pksensi}: An R package to apply global sensitivity analysis in physiologically based kinetic models"
+  formatted: "\\pkg{pksensi}: R package to apply global sensitivity analysis in physiologically based kinetic models"
   # If you use tex in the formatted title, also supply version without
-  plain:     "pksensi: An R package to apply global sensitivity analysis in physiologically based kinetic models"
+  plain:     "pksensi: R package to apply global sensitivity analysis in physiologically based kinetic models"
   # For running headers, if needed
-  short:     "**pksensi**: Sensitivity analysis for pharmacokinetic models in R"
+  short:     "**pksensi**: Global SA for PK models in R"
 abstract: >
   Sensitivity analysis (SA) is an essential tool for modelers to understand the influence of model parameters on model outputs. It is also increasingly used in developing and assessing pharmacokinetic models. In our earlier work, we applied a global SA workflow to reduce the computational burden in the Bayesian Markov Chain Monte Carlo-based calibration process of a physiologically based pharmacokinetic (PBPK) model. Although several SA algorithms are available, no comprehensive software package exists that allows users to seamlessly solve the PBPK model differential equations, run sensitivity analyses, visualize SA results, and discriminate between the “non-influential” model parameters that can be fixed and those that need calibration. Therefore, we developed an open-source \proglang{R} package, called **pksensi**, to fill this need and make SA more accessible in pharmacological and toxicological research. This package can investigate both parameter uncertainty and sensitivity in pharmacokinetic models, such as PBPK model with multivariate model outputs (multiple time-points and tissue compartments). It also refined the extended Fourier Amplitude Sensitivity Test method for SA by adding a random phase-shift to analyze the statistical variability of the sensitivity index for each model parameter. Furthermore, pksensi includes functions to check the convergence and sensitivity of model parameters, providing a means to assess the robustness of the sensitivity measurement. Utilizing pksensi, we successfully reproduced our previously published SA results of human PBPK modeling for acetaminophen and its two primary metabolites. Overall, **pksensi** improves the user experience of performing SA and can create robust and reproducible results for decision making in pharmacokinetic model calibration. 
 keywords:
@@ -36,9 +36,9 @@ Sensitivity analysis (SA) is a mathematical technique to investigate how variati
 
 In our earlier work [@fphar201800588], we developed a workflow to apply global SA to reduce the computational burden in the Bayesian, Markov Chain Monte Carlo (MCMC)-based calibration process of a physiologically based pharmacokinetic (PBPK) model. We used \pkg{GNU MCSim} [@JSSv002i09], an effective simulation package for Bayesian population PBPK modeling, to calibrate the model. We found that the extended Fourier Amplitude Sensitivity Test (eFAST), a type of variance-based global SA algorithm, had the best balance of efficiency and accuracy for a complex, multi-compartment, multi-dataset, and multi-metabolite PBPK model. This method was first introduced in @cukier1973study (the classic FAST method with first-order effect only) that study of the sensitivity of coupled reaction systems that are constructed by differential equations with the numerous rate coefficients and then evolved to Sobol' sensitivity measure in @saltelli1999quantitative (the eFAST method with first- and total-order effects). The FAST algorithm creates the multidimensional space of input parameters through "search-curve". It's more computationally efficient in calculating the influence of model parameter than other global SA methods such as the Monte Carlo based approaches from @jansen1999analysis and @owen2013better. Also, we found some efficient visualization approaches that can be used to distinguish between “influential” and “non-influential” parameters. This approach can solve identifiability issue of PBPK model parameter that increases the computational burden of Bayesian analysis, and therefore reduce the computational efficiency. We also found a useful features for communicating the parameter sensitivity in decision making.
 
-Most of SA tools are constructed using scientific computing software, such as \proglang{GNU Octave}/\proglang{Matlab} [@pianosi2015matlab], \proglang{python} [@herman2017salib], and \proglang{R} [@iooss2017introduction]. The \proglang{R} software is widely used and had numerious developed packages, such as \pkg{sensitivity} [@R-sensitivity], which is a practical tool to conduct local and global SA. The \pkg{sensitivity} package includes some functions to generate the parameter sequences by using different computing algorithms. Also, it provides a feasible way to integrate external modeling results. This computational approach can effectively solve the heavy computing burden of numerical solutions within the pure \proglang{R} environment. Several other \proglang{R} packages, such as \pkg{FME}, \pkg{multisensi}, and \pkg{ODEsensitivity} include SA tools and are freely available in the Comprehensive R Archive Network (CRAN). The \pkg{FME} package contains a basic method for performing local SA for dynamic models [@JSSv033i03]. It can also conduct collinearity and identifiability analysis to evaluate which model parameters can be estimated or exclude based on available observation data. The \pkg{multisensi} package provides SA for models with multivariate output [@R-multisensi]. \pkg{ODEsensitivity} can perform SA in ordinary differential equation (ODE) models [@R-ODEsensitivity]. It utilizes the ODE interface from the \pkg{deSolve} package and connect it with the SA from the \pkg{sensitivity} package. Other related packages such as \pkg{mtk} [@RJ-2015-031] and \pkg{fast} [@R-fast] are designed to investigate the importance of model parameter. Although these tools provide various approaches to perform SA, we have not found a suitable package that provides functions with which users can visualize and distinguish the “non-influential” model parameters and can further apply to parameter fixing in pharmacokinetic and PK modeling. The types of the kinetic model include the terms "pharmacokinetic", "toxicokinetic", and "biokinetic" model that are exchangeable in the model description. 
+Most of SA tools are constructed using scientific computing software, such as \proglang{GNU Octave}/\proglang{Matlab} [@pianosi2015matlab], \proglang{python} [@herman2017salib], and \proglang{R} [@iooss2017introduction]. The \proglang{R} software is widely used and had numerious developed packages, such as \pkg{sensitivity} [@R-sensitivity], which is a practical tool to conduct local and global SA. The \pkg{sensitivity} package includes some functions to generate the parameter sequences by using different computing algorithms. Also, it provides a feasible way to integrate external modeling results. This computational approach can effectively solve the heavy computing burden of numerical solutions within the pure \proglang{R} environment. Several other \proglang{R} packages, such as \pkg{FME}, \pkg{multisensi}, and \pkg{ODEsensitivity} include SA tools and are freely available in the Comprehensive R Archive Network (CRAN). The \pkg{FME} package contains a basic method for performing local SA for dynamic models [@JSSv033i03]. It can also conduct collinearity and identifiability analysis to evaluate which model parameters can be estimated or exclude based on available observation data. The \pkg{multisensi} package provides SA for models with multivariate output [@R-multisensi]. \pkg{ODEsensitivity} can perform SA in ordinary differential equation (ODE) models [@R-ODEsensitivity]. It utilizes the ODE interface from the \pkg{deSolve} package and connect it with the SA from the \pkg{sensitivity} package. Other related packages such as \pkg{mtk} [@RJ-2015-031] and \pkg{fast} [@R-fast] are designed to investigate the importance of model parameter. 
 
-We present here an \proglang{R} package, called \pkg{pksensi}, which is designed to make SA more accessible and reproducible in pharmacological and toxicological researches. This package can investigate both parameter uncertainty and sensitivity in pharmacokinetic and PK model with multivariate model outputs. The analytical framework in \pkg{pkseni} not only include global SA but the uncertainty analysis and diagnostic tool to support the modeling process. The design concepts of \pkg{pksensi} are:  
+Although these tools provide various approaches to perform SA, we have not found a suitable package that provides functions with which users can visualize and distinguish the “non-influential” model parameters and can further apply to parameter fixing in pharmacokinetic and PK modeling. We present here an \proglang{R} package, called \pkg{pksensi}, which is designed to make SA more accessible and reproducible in pharmacological and toxicological researches. This package can investigate both parameter uncertainty and sensitivity in pharmacokinetic and PK model with multivariate model outputs. The types of the kinetic model include the terms "pharmacokinetic", "toxicokinetic", and "biokinetic" model that are exchangeable in the model description. The analytical framework in \pkg{pkseni} not only include global SA but the uncertainty analysis and diagnostic tool to support the modeling process. The design concepts of \pkg{pksensi} are:  
 
 *	Cross-platform: Models can run on Windows/MacOS/Linux
 *	Freely available: All related packages are free and open source
@@ -61,25 +61,25 @@ Sys.setenv(PATH = paste(Rtools.path, Sys.getenv("PATH"), sep=";"))
 
 ## Parameter matrix generation
 
-We adopted eFAST, a widely used analysis of variance (ANOVA)-like global SA approach to decompose the variance to partial variances for multidimentional parameters in the numerical models, especially for ODE-based dynamical models, in this package. Most of the available eFAST functions, such as the algorithm to generate the parameter space and to set the sampling frequency, were sourced from the \proglang{R} \pkg{sensitivity} package [@R-sensitivity]. The eFAST method computes the sensitivity index (SI) via ANOVA-like decomposition of the function for analysis. This type of global SA approach and SI also know as Sobol' method and Sobol' index. Since the estimated SI is not stable (high variation) when using the lower number of sample size, we included a random phase-shift approach to conduct replicate sampling from random starting points across parameter space to test the convergence and robustness of the sensitivity measurement. Considering the model that is built under $y=f(x_{i})$. The sampling scheme can be written as:
+We adopted eFAST, a widely used analysis of variance (ANOVA)-like global SA approach to decompose the variance to partial variances for multidimentional parameters in the numerical models, especially for ODE-based dynamical models, in this package. Most of the available eFAST functions, such as the algorithm to generate the parameter space and to set the sampling frequency, were sourced from the \proglang{R} \pkg{sensitivity} package [@R-sensitivity]. The eFAST method computes the sensitivity index (SI) via ANOVA-like decomposition of the function for analysis. This type of global SA approach and SI also know as Sobol' method and Sobol' index. Since the estimated SI is not stable (high variation) when using the lower number of sample size, we included a random phase-shift approach to conduct replicating sampling from random starting points across parameter space to test the convergence and robustness of the sensitivity measurement. Considering the model that is built under $y=f(x_{i})$. The sampling scheme can be written as:
 
 $$ x_i = \frac{1}{2} + \frac{1}{\pi}\arcsin(\sin(\omega_is + \varphi_i)) $$
 
-where $x_i$ is the nominal value of the $i$-th parameter, and $\omega_i$ is a vector giving the set of frequencies, one frequency for each parameter, and $\varphi$ is a random phasei-shift coefficient ranged 0 to $2\pi$. The default set of frequencies is based on the study from @saltelli1999quantitative. Through the random phase-shift, the robust result of the sensitivity measurement should be similar across replications under the same sample size.
+where $x_i$ is the nominal value of the $i$-th parameter, and $\omega_i$ is a vector giving the set of frequencies, one frequency for each parameter, and $\varphi$ is a random phasei-shift coefficient ranged from 0 to $2\pi$. The default set of frequencies is based on the study from @saltelli1999quantitative. Through the random phase-shift, the robust result of the sensitivity measurement should be similar across replications under the same sample size.
 
-To investigate the convergence of sensitivity indices, we adopted the "exam" approach proposed by [@sarrazin2016global]. This method quantitatively assesses convergence by computing the width of 95% confidence intervals of computed sensitivity index for all parameters across all time-points and output variables. Through random phase shift procedure, the sensitivity index can repeatly generate with low and high variation based on the given sampling size. Therefore, they can be used to investigate the convergence of sensitivity indices as 
+To investigate the convergence of SI, we adopted the "exam" approach proposed by [@sarrazin2016global]. This method quantitatively assesses convergence by computing the width of 95% confidence intervals of computed SI for all parameters across all time-points and output variables. Through random phase shift procedure, the SI can repeatly generate with low and high variation based on the given sampling size. Therefore, they can be used to investigate the convergence of SI as 
 
 $$CI_{i,t} = max(SI_{i,t}^{ub}-SI_{i,t}^{lb})$$
 
-where $SI_{i,t}^{ub}$ and $SI_{i,t}^{ub}$ are the upper and lower bound of the sensitivity index from the specific model output ($i$) at time ($t$). $CI_{i,t}$ is the corresponding convergence index. 
+where $SI_{i,t}^{ub}$ and $SI_{i,t}^{ub}$ are the upper and lower bound of the SI from the specific model output ($i$) at time ($t$). $CI_{i,t}$ is the corresponding convergence index. 
 
-To integrate the random phase-shift with eFAST, we built the \code{rfast99} function, which can be used to perform the sensitivity test for the whole modeling process. The function \code{rfast99} in \pkg{pksensi} can sample and generate the testing parameter matrix based on a given argument of sample size n and probability distribution (e.g., mean/s.d. of normal distribution, meanlog/sdlog of log-normal distribution, and minimum/maximum of uniform distribution). The number of model evaluations is equal to the sample size times the number of model parameters.
+To integrate the random phase-shift with eFAST, we built the \code{rfast99} function, which can be used to perform the sensitivity test for the whole modeling process. The function \code{rfast99} in \pkg{pksensi} can sample and generate the testing parameter matrix based on a given argument of sample size $n$ and probability distribution (e.g., mean/s.d. of normal distribution, meanlog/sdlog of log-normal distribution, and minimum/maximum of uniform distribution). The number of model evaluations is equal to the sample size times the number of model parameters.
 
 ## Modeling
 
-The R package \pkg{pksensi} provides a useful function to solve ODE in pharmacokinetic and PK models using analytical and numerical approaches. The solution can be performed under the pure \proglang{R} programming environment by linking pksensi with the \pkg{deSolve} package [@JSSv033i09]. However, the most efficient way to achieve high computational speed is through compiled, lower-level languages, such as \proglang{FORTRAN}, \proglang{C}, or \proglang{C++}. The \pkg{pksensi} includes a function to compile and create dynamic-link libraries (.dll) on Windows and shared objects (.so) on Unix-liked systems (e.g., Linux and MacOS). This compiled file can load and execute through the build-in function in \proglang{R}. However, Windows users need to install Rtools to compile the source code by using the GNU GCC compiler. More requirements are detailed in the study from [@soetaertr]. The \proglang{C} implementation of the example model can be found as an example within \pkg{GNU MCSim} v6.0.1 [@JSSv002i09]. The \pkg{pksensi} can also link with \proglang{GNU MCSim} to compile the model code, used in solving each system of equations.
+The R package \pkg{pksensi} provides a useful function to solve ODE in pharmacokinetic and PK models using analytical and numerical approaches. The solution can be performed under the pure \proglang{R} programming environment by linking pksensi with the \pkg{deSolve} package [@JSSv033i09]. However, the most efficient way to achieve high computational speed is through compiled, lower-level languages, such as \proglang{FORTRAN}, \proglang{C}, or \proglang{C++}. The \pkg{pksensi} includes a function to compile and create dynamic-link libraries (.dll) on Windows and shared objects (.so) on Unix-liked systems (e.g., Linux and MacOS). This compiled program can load and execute through the build-in function in \proglang{R}. However, Windows users need to install Rtools to compile the source code by using the GNU GCC compiler. More requirements are detailed in @soetaertr. The \proglang{C} implementation of the example model can be found as an example within \pkg{GNU MCSim} [@JSSv002i09]. The \pkg{pksensi} can also link with \pkg{GNU MCSim} to create the model program, used in solving each system of equations.
 
-The uncertainty analysis is a crucial modeling process with SA. Sometimes, it's difficult to have informative data to set up the parameter distribution. The wider range of parameter distribution might cause the computation error at the extreme value. The narrower range might cause the incorrect calibrated result of the model parameter. To prevent this problem. The uncertainty analysis with Monte Carlo method is an appropriate approach in the data-driven modeling process. Before the model calibration, the Monte Carlo can be applied with the given distribution of model parameter to exam whether the experiment data can be included in the distribution of model output. \pkg{pksensi} includes the function that can link to \pkg{GNU MCSim} to conduct Monte Carlo analysis which is built in \pkg{GNU MCSim} and exam the simulation result. The general workflow of uncertainty and sensitivityanalysis is illustrated in Figure \ref{fig:Workflow}.
+The uncertainty analysis is a crucial modeling process with SA. Sometimes, it's difficult to have informative data to set up the parameter distribution. The wider range of parameter distribution might cause the computing error at the extreme value. The narrower range might cause the incorrect calibrated result of the model parameter. The uncertainty analysis with Monte Carlo method is an appropriate approach in the data-driven modeling process to prevent this problem. Before fitting the data to model, the Monte Carlo can be applied with the given distribution of model parameter to exam whether the experiment data can be included in the distribution of model output. \pkg{pksensi} also has a function that can link to \pkg{GNU MCSim} to conduct Monte Carlo analysis which is built in \pkg{GNU MCSim} and exam the simulation result. The general workflow of uncertainty and sensitivity analysis is illustrated in Figure \ref{fig:Workflow}.
 
 ```{r workflow, echo = FALSE, out.width = "100%", fig.cap = '\\label{fig:Workflow}Workflow for performing uncertainty and sensitivity analysis.'}
 knitr::include_graphics("diagram/workflow.png")
@@ -87,7 +87,7 @@ knitr::include_graphics("diagram/workflow.png")
 
 ## Output visualization and decision support
 
-The output of SA returns a list that contains the given time-points and values of all state variables (e.g., chemical concentrations in blood). This format is particularly suited for further graphical routines within \pkg{pksensi}. Also, time-dependent sensitivity measurements of first and total order effect for all parameters can be plotted simultaneously. The sensitivity index might have different estimation across replications under the same sample size. The inadequate sample number can create an unreliable result and bias. It's essential to use the sufficient sample size to prevent incorrect judgment in parameter fixing. Therefore, \pkg{pksensi} includes functions to check the convergence and sensitivity of model parameters, providing a means to assess the robustness of the sensitivity measurement. We also developed a "cut-off"-based approach in this package to accurately distinguish between "influential" and "non-influential" parameters. Finally, \pkg{pksensi} includes numerous visualization tools for the effective investigation and communication of results in decision support. 
+The output of SA returns a list that contains the given time-points and values of all state variables (e.g., chemical concentrations in blood). This format is particularly suited for further graphical routines within \pkg{pksensi}. Also, time-dependent sensitivity measurements of first and total order effects for all parameters can be plotted simultaneously. The computed SI might show different estimation across replications under the same sample size. Therefore, the inadequate sample number can create an unreliable result and bias. It's essential to use the sufficient sample size to prevent incorrect judgment in parameter fixing. \pkg{pksensi} includes functions to check the convergence and sensitivity of model parameters, providing a means to assess the robustness of the sensitivity measurement. We also developed a "cut-off"-based approach in this package to accurately distinguish between "influential" and "non-influential" parameters. Finally, \pkg{pksensi} provides visualization tools for the effective investigation and communication of results in decision support. 
 
 # Examples 
 
@@ -102,7 +102,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-In this section, two types of PK model were applied here to demonstrate how \pkg{pksensi} work. The first one is generic model and the second is the chemical-specific model. The following code shows the version of the platform, version of \proglang{R} and \pkg{pksensi} that use to conduct the current example. The version of \pkg{GNU MCSim} is 6.1.0. 
+In this section, two types of PK model were applied here to demonstrate how \pkg{pksensi} work. The first one is generic model and the second is the chemical-specific model. The following code shows the version of the platform, version of \proglang{R} and \pkg{pksensi} that use to conduct the current example. We use \pkg{GNU MCSim} v6.1.0 in these examples. 
 
 ```{r}
 sessionInfo()$R.version$version.string
@@ -121,17 +121,17 @@ In the first example, we use a generic, one-compartment PK model from \pkg{httk}
 $$\frac{dA_{gutlumen}}{dt} = -k_{gutabs} \cdot A_{gutlumen} + g(t)$$
 $$\frac{dA_{rest}}{dt} = \frac{dA_{gutlumen}}{dt}-k_{elim} \cdot A_{rest}$$
 
-where $A_{gutlumen}$ is the state variable that describes the quantity of compound in the gut lumen (mg) and $A_{rest}$ is the quantity of compound in rest of body and body blood (mg). The parameter $k_{gutabs}$ is the absorption rate constant that describes the chemical absorption from the gut lumen into gut tissue through first-order processes (/h) and $k_{elim}$ is the elimination rate constant (/h), which is equal to the total clearance divided by the volume of distribution. The time-dependent function $g(t)$ is used to describe the oral dosing schedule. 
+where $A_{gutlumen}$ is the state variable that describes the quantity of compound in the gut lumen (mg) and $A_{rest}$ is the quantity of compound in rest of body and blood (mg). The parameter $k_{gutabs}$ is the absorption rate constant that describes the chemical absorption from the gut lumen into gut tissue through first-order processes (/h) and $k_{elim}$ is the elimination rate constant (/h), which is equal to the total clearance divided by the volume of distribution. The time-dependent function $g(t)$ is used to describe the oral dosing schedule. 
 
-The concentration of the chemical in the rest of body blood $C_{rest}$ can be calculated as 
+The concentration of the chemical in the rest of body and blood ($C_{rest}$, mg/L) can be calculated as 
 
 $$ C_{rest} = A_{rest} / V_{dist} \cdot BW$$
 
-where $V_{dist}$ is the volume of distribution (L/kg BW) and $BW$ is the body weight (kg). The $C_{rest}$ can also be seen as the chemical concentration in plasma (mg/L) that can be further used to compare with observed results in a pharmacokinetic experiment. The bioavailability is assumed to be 100% in this model.
+where $V_{dist}$ is the volume of distribution (L/kg BW) and $BW$ is the body weight (kg). The $C_{rest}$ can also be seen as the chemical concentration in plasma that can be further used to compare with observed results in a pharmacokinetic experiment. The bioavailability is assumed to be 100% in this model.
 
 ### Model implementations with R deSolve package
 
-To start, we implemented the one-compartment PK model in \proglang{R} by compiling the file written under the \pkg{GNU MCSim}'s model format. \pkg{pksensi} allows users select the preferred method to solve the pharmacokinetic model, either with the \pkg{deSolve} package or with \pkg{GNU MCSim} through the compile function. Running model under \pkg{GNU MCSim} native code can have a faster speed to obtain the model outputs. This section demo how to conduct global SA with \pkg{deSolve} package. Then compare the computer time with \pkg{MCSim}.
+To start, we implemented the one-compartment PK model in \proglang{R} by compiling the file written under the \pkg{GNU MCSim}'s model format. \pkg{pksensi} allows users select the preferred method to solve the pharmacokinetic model, either with the \pkg{deSolve} package or with \pkg{GNU MCSim} through the compile function. Running model under \pkg{GNU MCSim} native code can have a faster speed to obtain the model outputs. This section mainly focus on how to conduct global SA with \pkg{deSolve} package. Then compare the computing time with \pkg{MCSim}.
 
 The following \proglang{R} script will download the one-compartment PK model from https://github.com/nanhung/pksensi/blob/master/tests/pbtk1cpt.model. The model mainly includes two state variables that are the quantity of compound in the gut lumen (\code{Agutlument}) and the rest of body (\code{Acompartmant}). The \code{Ametabolized} is the quantity of compound transform and metabolize through hepatic clearance. The \code{AUC} is the calculated area under the curve of the rest body ($mg \cdot h/L$).
 
@@ -140,11 +140,11 @@ pbtk1cpt_model()
 cat(readLines("pbtk1cpt.model"), sep = "\n")
 ```
 
-The code must first be compiled to run the model. After create the model file, we can use \code{compile_model} to generate the file that has dynamic-link library (DLL) or share object (SO) extention and can be linked dynamically into an \proglang{R} session (\code{pbtk1cpt.dll} on Windows or \code{pbtk1cpt.so} on other systems) and \proglang{R} file (\code{pbtk1cpt_inits.R}) with default input parameters and initial state settings with the definition of \code{application = "R"}. 
+The code must first be compiled to run the model. After create the model file, we can use \code{compile_model} to generate the file that has dynamic-link library (DLL) or share object (SO) extention and can be linked dynamically into an \proglang{R} session (\code{pbtk1cpt.dll} on Windows or \code{pbtk1cpt.so} on other systems) and \proglang{R} file (\code{pbtk1cpt_inits.R}) with default input parameters and initial state settings with the definition of \code{application = "R"}.
 
 ```{r eval=T, message=FALSE, warning=FALSE}
 mName <- "pbtk1cpt"
-compile_model(mName, application = "R", version = "6.1.0")
+compile_model(mName, application = "R")
 ```
 
 The \code{pbtk1cpt_inits.R} file includes \code{initParms} and \code{initStates} functions and \code{Outputs} variable. The created function have default value of model parameters and initial conditions that can further use to customize in the simulation.  
@@ -153,9 +153,9 @@ The \code{pbtk1cpt_inits.R} file includes \code{initParms} and \code{initStates}
 source(paste0(mName, "_inits.R"))
 ```
 
-The parameter values and initial states can be customized to the specific condition. It can also schedule for the given dosing scenario. In the current setting, we assumed the initial condition of the intake chemical to be 1000 mg. We can use \code{initParms} and \code{initStates} functions to customize the parameter values and the initial state that will be used in the following modeling and SA. These additional functions are generated when compiling the model file. 
+The parameter values and initial states can be customized to the specific condition. It can also schedule for the given dosing scenario. In the current setting, we assumed the initial condition of the intake dose to be 1000 mg. We can use \code{initParms} and \code{initStates} functions to customize the parameter values and the initial state that will be used in the following modeling and SA. These additional functions are generated when compiling the model file. 
 
-We used the corresponding parameter value of acetaminophen in this example. The parameter value can be generated from \code{parameterize_1comp} function in \pkg{httk} package, which includes physico-chemical and drug biological properties for over 500 chemicals. The given value of \code{vdist}, \code{ke}, and \code{kgutabs} in \pkg{httk} are 1.1 (L/kg BW), 0.23 (/h), and 2.18 (/h), respectively. The body weight is assumed to be 70 (kg).
+We used the corresponding parameter value of  (APAP) in this example. The parameter value can be generated from \code{parameterize_1comp} function in \pkg{httk} package, which includes physico-chemical properties for over 500 chemicals. The given value of \code{vdist}, \code{ke}, and \code{kgutabs} in \pkg{httk} are 1.1 (L/kg BW), 0.23 (/h), and 2.18 (/h), respectively. The body weight is assumed to be 70 (kg).
 
 ```{r, eval=T}
 parms <- initParms()
@@ -182,7 +182,7 @@ Outputs
 ```
 
 
-Using the \code{ode} function in \pkg{deSolve} package, we can visualize the pharmacokinetic profile (Figure \ref{fig:ode-PK}) according to the given parameter conditions and the time points (\code{t}):
+Using the \code{ode} function in \pkg{deSolve} package, we can visualize the pharmacokinetic profile (Figure \ref{fig:ode-PK}) according to the given parameter baseline and the time points (\code{t}):
 
 ```{r, eval=T}
 t <- seq(from = 0.01, to = 24.01, by = 1)
@@ -195,7 +195,7 @@ y <- deSolve::ode(initState, t, func = "derivs", parms = parms,
 plot(y)
 ```
 
-We conduct global SA for the four parameters in one-compartment PK model to investigate the parameter impact on the plasma concentration during the 24-hr time period post intake. The distribution of parameter is taken to be uniform with bounds corresponding to 50% and 200% of the nominal value. Therefore, the parameter ranges are assumed to be 0.55 and 2.2 L/kg BW for \code{vdist}. The \code{ke} are ranged from 0.12 to 0.46 /h, corresponding to half-times of 1.5 and 5.8 hr. The \code{ka} are ranged 1.09 to 4.36 /h, corresponding to half-times of 0.32 and 0.64 hr. The $BW$ is assumed to a normal distribution with mean = 60 kg and sd = 5 kg. The number of samples determines the robustness of the result of SA. Higher sample numbers sizes lead to narrower confidence intervals for sensitivity measurements across different replications. However, it will take a longer time in computation. Here we use a sample size of 200 with 20 replications:
+We conduct global SA for the four parameters in one-compartment PK model to investigate the parameter impact on the plasma concentration during the 24-hr time period post intake. The distribution of parameter is taken to be uniform with bounds corresponding to 50% and 200% of the nominal value. Therefore, the parameter ranges are assumed to be 0.55 and 2.2 L/kg BW for \code{vdist}. The \code{ke} are ranged from 0.12 to 0.46 /h, corresponding to half-times of 1.5 and 5.8 hr. The \code{ka} are ranged 1.09 to 4.36 /h, corresponding to half-times of 0.32 and 0.64 hr. The $BW$ is assumed to a normal distribution with mean = 60 kg and sd = 5 kg. The number of sample size determines the robustness of the result of SA. Higher number of sample size lead to narrower confidence intervals for sensitivity measurements across different replications. However, it will take a longer time in computation. Here we use a sample size of 200 with 20 replications.
 
 ```{r, eval=T}
 q <- c("qunif", "qunif", "qunif", "qnorm")
@@ -213,19 +213,19 @@ set.seed(1234)
 x <- rfast99(params, n = 200, q = q, q.arg = q.arg, replicate = 20)
 ```
 
-The generated parameters are stored as a 3-D array under the named \code{a} with the dimension of sample size, number of replication, and number of parameter, respectively.
+The generated parameters are stored as a 3-D array under the named \code{a}, with the dimension of sample size, number of replication, and number of parameter, respectively.
 
 ```{r}
 dim(x$a)
 ```
 
-The sample number was 200 with 4 model parameters, which generate 800 model evaluations. The replication was set to 20. Therefore, the totol of 16,000 parameter sequence will be used to compute the corresponding outputs. Figure \ref{fig:rep-sampl} plotted the sampling process for each parameter from the first 3 replications. The search curves show the different intensity of sampling patterns in each segment.
+The sample number is 200 with 4 model parameters, which generates 800 model evaluations. The replication is set to 20. Therefore, the totol of 16,000 parameter sequence will be used to compute the corresponding outputs. Figure \ref{fig:rep-sampl} plotted the sampling process for each parameter from the first 3 replications. The search curves show the different intensity of sampling patterns in each segment.
 
-```{r, eval=T, fig.cap = '\\label{fig:rep-sampl}The parameter search curve generated by eFAST method. The x-axis is the sample number and y-axis is the parameter value for \\code{vdist}, \\code{ke}, \\code{kgutabs}, and \\code{BW} (top to down), respectively. The bar plot shows the distribution of sampling parameter.'}
-par(mfrow=c(4,4),mar=c(0,0,0,0),oma=c(3,3,2,1), pch =".")
+```{r, eval=T, fig.height=5, fig.cap = '\\label{fig:rep-sampl}The parameter search curve generated by eFAST method. The x-axis is the sample number and y-axis is the parameter value for \\code{vdist}, \\code{ke}, \\code{kgutabs}, and \\code{BW} (top to down), respectively. The bar plot shows the distribution of sampling parameter.'}
+par(mfrow=c(4,4),mar=c(0.8,0.8,0.8,0),oma=c(4,4,2,1), pch =".")
 for (j in c("vdist", "ke", "kgutabs", "BW")) {
   if ( j == "BW") {
-    plot(x$a[,1,j], ylab = "")
+    plot(x$a[,1,j], ylab = "BW")
   } else plot(x$a[,1,j], xaxt="n", ylab = "")
   for (i in 2:3) {
   if ( j == "BW") {
@@ -234,11 +234,12 @@ for (j in c("vdist", "ke", "kgutabs", "BW")) {
   } 
   hist <- hist(x$a[,,j], plot=FALSE, 
                breaks=seq(from=min(x$a[,,j]), to=max(x$a[,,j]), length.out=20))
-  barplot(hist$density, axes=FALSE, space=0, horiz = T) 
+  barplot(hist$density, axes=FALSE, space=0, horiz = T, main = j) 
 }
+mtext("Model evaluation", SOUTH<-1, line=2, outer=TRUE)
 ```
 
-Because the PK model is being used to describe a continuous process for the chemical concentration over time, the sensitivity measurements, therefore, have the time-dependent relationships for each model parameter. Here we define the output time points (\code{t}) to examine the change of the parameter sensitivity over time. To solve the model through \pkg{deSolve}, we need to provide the details of the argument: 
+Because the PK model is being used to describe a continuous process for the chemical concentration over time, the sensitivity measurements, therefore, have the time-dependent relationships for each model parameter. Here we define the output time points (\code{t}) to examine the change of the parameter sensitivity over time. To solve the model through \pkg{deSolve}, we need to provide the details of the argument, which include time (\code{t}), initial  conditions of state variable (\code{initState}), output variables (\code{outnames}), and name of the shared library (\code{mName}, without extension). To create the time-dependent sensitivity measurement, we set the time duration from 0.01 to 24.01 hours with the time segment of 1 hour as the above definition in \code{ode} function in this example. The initial time point should avoid 0 to prevent computational error in misconduct. The \code{outnames}, \code{dllname}, are based on the arguments from the \code{ode} function in \pkg{deSolve} package. The details of the model structure and these arguments are defined in \code{pbtk1comp.c}. and \code{pbtk1comp_inits.R} files.
 
 ```{r, eval=T}
 outputs <- c("Ccompartment", "Ametabolized")
@@ -246,26 +247,26 @@ out <- solve_fun(x, time = t, initState = initState,
                  outnames = outputs, dllname = mName)
 ```
 
-To create the time-dependent sensitivity measurement, we set the time duration from 0.01 to 24.01 hours with the time segment of 1 hour as the above definition in \code{ode} function in this example. The initial time point should avoid 0 to prevent computational error in misconduct. The \code{outnames}, \code{dllname}, are based on the arguments from the \code{ode} function in \pkg{deSolve} package. The details of the model structure and these arguments are defined in \code{pbtk1comp.c}. and \code{pbtk1comp_inits.R} files. The \code{out} is an S3 object of \code{rfast99} as well, which can link with \code{print}, \code{plot}, and \code{check} method to examine the sensitivity measurements. The \code{print} function gives the sensitivity and convergence indices for main, interaction, and total order at each time point. In addition to print out the result of SA, the more efficient way to distinguish the influence of model parameter is to visualize them. The time-dependent sensitivity indices are shown in Figure \ref{fig:pk-solvefun-rest}. 
+The output result \code{out} is an S3 object of \code{rfast99} as well, which can link with \code{print}, \code{plot}, and \code{check} method to examine the sensitivity measurements. The \code{print} function gives the sensitivity and convergence indices for main, interaction, and total order at each time point. In addition to print out the result of SA, the more efficient way to distinguish the influence of model parameter is to visualize these indices. The time-dependent SI are shown in Figure \ref{fig:pk-solvefun-rest}. The SI has computed range from 0 (no impact) to 1 (high impact) and represent the contribution percentage of output variance under the given parameter distributions.
 
-```{r, eval=T, fig.cap = '\\label{fig:pk-solvefun-rest}Time-dependent sensitivity indices of the plasma concentration estimated from one-compartment PK model during 24-hr time period intake. The solid line represent the total (black) and first (red) order sensitivity index with 95\\% confidence interval (polygon). The dash line is the cut-off with default value of 0.05.'}
+```{r, eval=T, fig.cap = '\\label{fig:pk-solvefun-rest}Time-dependent SI of the plasma concentration estimated from one-compartment PK model during 24-hr time period intake. The solid line represent the total (black) and first (red) order SI with 95\\% confidence interval (polygon). The dash line is the cut-off with default value of 0.05.'}
 plot(out)
 ```
 
-Here, we can see (Figure \ref{fig:pk-solvefun-rest}) that \code{vdist} and \code{ke} are dominating the plasma concentration before and after 5-hr post chemical intake, respectively. Besides, the \code{kgutabs} only plays a crucial role to determine the plasma concentration in the first hour. However, the current result is only based on the setting distribution of model parameters for acetaminophen. The different given input conditions (e.g., range of parameter uncertainty, chemical dependent parameter value) can change the result (result not shown).
+Here, we can see (Figure \ref{fig:pk-solvefun-rest}) that \code{vdist} and \code{ke} are dominating the plasma concentration before and after 5-hr post chemical intake, respectively. Besides, the \code{kgutabs} only plays a crucial role to determine the plasma concentration in the first hour. However, the current result is only based on the setting distribution of model parameters for APAP. The different given input conditions (e.g., range of parameter uncertainty, chemical dependent parameter value) can change the result (result not shown).
 
-The default output in the plotting is setting at the first variable. To exam the time-sependent sensitivity index of other variables, such as \code{Ametabolized} in this case, we need to assign the variable name \code{vars = "Ametabolized"} in \code{plot} function (Figure \ref{fig:pk-solvefun-Amet}).
+The default output in the plotting is setting at the first variable. To exam the time-sependent SI of other variables, such as \code{Ametabolized} in this case, we need to assign the variable name \code{vars = "Ametabolized"} in \code{plot} function (Figure \ref{fig:pk-solvefun-Amet}).
 
-```{r, eval=T, fig.cap = '\\label{fig:pk-solvefun-Amet}Time-dependent sensitivity indices of the plasma concentration estimated from one-compartment PK model during 24-hr time period intake..'}
+```{r, eval=T, fig.cap = '\\label{fig:pk-solvefun-Amet}Time-dependent SI of the plasma concentration estimated from one-compartment PK model during 24-hr time period intake..'}
 plot(out, vars = "Ametabolized")
 ```
 
-The Figure \ref{fig:pk-solvefun-Amet} shows that the amount of metabolized is also determined by \code{ke}. Same as \code{Ccompartment}, the \code{kgutabs} contribute about 30 - 40% variation of model output in the first hour. The \code{BW} is the least important parameter in the current analysis, and therefore can be fixed in the model calibration and applications.
+The Figure \ref{fig:pk-solvefun-Amet} shows that the amount of metabolized is also determined by parameter \code{ke}. Same as \code{Ccompartment}, the \code{kgutabs} contribute about 30 - 40% variation of model output in the first hour. The \code{BW} is the least important parameter in the current analysis, and therefore can be fixed in the model fitting to data and additional applications.
 
-In addition to use time-sI profile to investigate the parameter impact on model output, we can construct the relationship between parameter and the corresponding value of model output in the examination. Figure \ref{fig:SI-output} show the concentration of rest body and the model parameters: 
+In addition to use time-SI profile to investigate the parameter impact on model output, we can construct the relationship between parameter and the corresponding value of model output in the examination. 
 
 ```{r, eval=T, fig.cap = '\\label{fig:SI-output}The relationship between model parameter and estimated concentration at times 0.01, 2.01, 6.01, and 24.01 hr (top to bottom), respectively.'}
-par(mfcol=c(4,4),mar=c(0.5,0.5,0,0),oma=c(3,3,2,1), pch = ".")
+par(mfcol=c(4,4),mar=c(0.8,0.8,0,0),oma=c(4,4,2,1), pch = ".")
 plot(x$a[,1,"vdist"], out$y[,1,"0.01",1], xaxt="n", main = "\nvdist")
 plot(x$a[,1,"vdist"], out$y[,1,"2.01",1], xaxt="n")
 plot(x$a[,1,"vdist"], out$y[,1,"6.01",1], xaxt="n")
@@ -279,26 +280,25 @@ for (j in c("ke", "kgutabs", "BW")){
       } else plot(x$a[,1,j], out$y[,1,k,1], xaxt = "n", yaxt = "n")
   }
 }
-mtext("Parameter", SOUTH<-1, line=1.8, outer=TRUE)
-mtext("Ccompartment", WEST<-2, line=1.8, outer=TRUE)
+mtext("Parameter", SOUTH<-1, line=2, outer=TRUE)
+mtext("Ccompartment", WEST<-2, line=2, outer=TRUE)
 ```
 
+Figure \ref{fig:SI-output} show the concentration of rest body (\code{Ccompartment}) and the model parameters. We can find that \code{kgutabs} and \code{vdist} have higher correlation with \code{Ccompartment} in the beginning (t = 0.01 h) of post-intake duration compared with other parameters, representing that the parameters have high impact on the modeling result. The \code{ke} shows the high correlation at the later time period (t = 24.01 h). The \code{BW} doesn't show any obvious relationship with \code{Ccompartment}.
 
-We can find that \code{kgutabs} and \code{vdist} have higher correlation with \code{Ccompartment} in the beginning (t = 0.01 h) of post-intake duration compared with other parameters, representing that the parameters have high impact on the modeling result. The \code{ke} shows the high correlation at the lateing time (t = 24.01 h). The \code{BW} doesn't show any obvious relationship with \code{Ccompartment}.
-
-The output variable \code{out} containing all the input arguments detailed before and the calculated sensitivity indices of first order (\code{mSI}), interaction (\code{iSI}), and total order (\code{tSI}). The convergence indices are also stored in the list named \code{mCI}, \code{iCI}, and \code{tCI}. The output are formated as 4-D array in \code{y} with the dimension name of model evaluation, number of replication, number of time points, and number of variable, respectively.
+The output variable \code{out} containing all the input arguments detailed before and the calculated SI of first order (\code{mSI}), interaction (\code{iSI}), and total order (\code{tSI}). The convergence indices are also stored in the list named \code{mCI}, \code{iCI}, and \code{tCI}. The output are formated as 4-D array in \code{y} with the dimension name of model evaluation, number of replications, number of time points, and number of output variables, respectively.
 
 ```{r, eval=T}
 dim(out$y)
 ```
 
-Some functions in \pkg{pksensi} provide the useful way to check the result from global SA. The \code{check} can determine which parameters have relatively lower sensitivity measurement across the given time interval, and therefore can be applied parameter fixing in model calibration. The \code{check} also provides some feasible argument to specify the target output or change the cut-off value. The argument of \code{SI.cutoff} is setting at 0.05 to detect the relative non-influential parameters as default. 
+Some functions in \pkg{pksensi} provide a efficient way to check the result from global SA. The \code{check} can determine which parameters have relatively lower sensitivity measurement across the given time points and model outputs, and therefore can be applied parameter fixing in model calibration. The \code{check} also provides some feasible argument to specify the target output or change the cut-off value. The argument of \code{SI.cutoff} is setting at 0.05 to detect the relative non-influential parameters as default. 
 
 ```{r, eval=T}
 check(out, SI.cutoff = 0.05)
 ```
 
-Based on the sensitivity measurement of the total order, the result shows that \code{BW} has a relative lower measurement of sensitivity index. However, all parameters do not converge to the setting cut-off, which means the larger sample size is required in further sensitivity testing. Same as \code{plot} function that can assign specific output variable in the examination, the \code{check} function can also use the assignment (\code{vars}) to exam the given output.
+Based on the sensitivity measurement of the total order, the result shows that \code{BW} has a relative lower measurement of SI. However, all parameters do not converge to the setting cut-off, which means the larger sample size is required in further sensitivity testing. Same as \code{plot} function that can assign specific output variable in the examination, the \code{check} function can also use the assignment (\code{vars}) to exam the given output.
 
 ### Model implementation with GNU MCSim
 
@@ -312,10 +312,10 @@ system.time(out<-solve_fun(x, t, initState = initState,
 Then, before we conduct the SA through \pkg{GNU MCSim}, The following code is used to compile the \pkg{GNU MCSim} model code to the exexutable program.
 
 ```{r, eval=T, message=F, warning=F}
-compile_model(mName, application = "mcsim", version = "6.1.0")
+compile_model(mName, application = "mcsim")
 ```
 
-Similar to \code{solve_fun} function that can define the initial parameter and state variables' values through generated functions, the \code{solve_mcsim} also has a \code{condition} argument that can be used to give the specific input value such as oral dose, fixed parameter value or initial condition of state variable.
+Similar to \code{solve_fun} function that can define the initial value of parameter and state variable through generated functions, the \code{solve_mcsim} also has a \code{condition} argument that can be used to give the specific input value such as exposure dose, fixed parameter value or initial condition of state variable.
 
 ```{r, eval=T}
 conditions <- c("Agutlument = 10") 
@@ -328,7 +328,7 @@ After solving the equations under the same given condition, we can find that \pk
 
 ## Acetaminophen-PBPK model
 
-The aim of this section is to apply global SA for acetaminophen-PBPK model through \pkg{pksensi}. The model code is included in this package in https://github.com/nanhung/pksensi/blob/master/tests/pbpk_apap.model and can be generated through \code{pbpk_apap_model} function. We applied the global SA workflow to the original published model with 21 model parameters [@s13318-015-0253-x]. The descriptions of each parameter and the sampling ranges are list in Table \ref{tab:data}.
+The aim of this section is to apply global SA for APAP-PBPK model through \pkg{pksensi}. The model code is included in this package in https://github.com/nanhung/pksensi/blob/master/tests/pbpk_apap.model and can be generated through \code{pbpk_apap_model} function. We applied the global SA workflow to the original published model with 21 model parameters [@s13318-015-0253-x]. The descriptions of each parameter and the sampling ranges are list in Table \ref{tab:data}.
 
 ```{r, results='asis',message=FALSE,warning=FALSE, echo = F}
 library(xtable)
@@ -404,7 +404,7 @@ max <- c(round(Tg+r, 3), round(Tp+r, 3), round(CYP_Km+r), round(log(2900), 3),
 df <- data.frame(x, y, z, min, max)
 names(df) <- c("Parameter","Description", "Unit", "Min", "Max")
 
-print(xtable(df, caption = "\\label{tab:data}Description of sampling range of model parameter."),
+print(xtable(df, center = "centering", caption = "\\label{tab:data}Description of sampling range of model parameter."), 
       type = "latex", 
       caption.placement = "bottom", include.rownames = FALSE,
       sanitize.text.function = function(x) {x})
@@ -428,21 +428,21 @@ Km_AS <- log(2.29e4)
 rng <- 1.96 
 ```
 
-Generally, wide range of parameter value might cause the computating error when the solving the ODE. One of the effective ways to prevent this problem is to adjust the value of relative and absolute error tolerance to control the error appearance by resetting these parameters in a lower value. The \code{generate_infile} and \code{solve_mcsim} provide the arguments of \code{rtol} and \code{atol} that adjust the error tolerance to prevent the unwanted error. However, the modification will lower computational speed. Therefore, the alternative method to prevent the computational errors is to detect the crucial parameter range that causes the problem. Also, setting the maximum number of (internally defined) steps to higher value instead of using the default value (500) in \pkg{GNU MCSim} can prevent this problem. The maximum number of step is set to 5000 in this case. Here we seperate the global SA of APAP-PBPK model process to several steps.
+Generally, wide range of parameter value might cause the computing error when solving the differentiial equation. One of the effective ways to prevent this problem is to adjust the value of relative and absolute error tolerance to control the error appearance by resetting these parameters in a lower value. The \code{generate_infile} and \code{solve_mcsim} provide the arguments of \code{rtol} and \code{atol} that adjust the error tolerance to prevent the unwanted error. However, the modification will decrease the computing speed. Therefore, the alternative method to prevent this issue is to detect the crucial parameter range that causes the problem. Also, setting the maximum number of steps to higher value instead of using the default value (500) in \pkg{GNU MCSim} can prevent this problem (internally defined). The maximum number of step is set to 5000 in this case. Here we seperate the global SA of APAP-PBPK model process to several steps. The value can reset through reinstall the the \pkg{GNU MCSim} by using \code{mcsim_install(mxstp = 5000)}.
 
 ### Prepare and compile the model file
 
-The model code needs to be prepared in the following global SA workflow. After creating the \code{pbpk_apap.model} file in the working directory, the next step is to generate the executable program (\code{mcsim.pbpk_apap}) through \code{compile_model}. 
+The model code needs to be prepared in the following global SA workflow. After creating the \code{pbpk_apap.model} file in the working directory, the next step is to generate the executable program (\code{mcsim.pbpk_apap}) through \code{compile_model} function. 
 
 ```{r, eval=T}
 mName <- "pbpk_apap"
 pbpk_apap_model()
-compile_model(mName, application = "mcsim", version = "6.1.0")
+compile_model(mName, application = "mcsim")
 ```
 
 ### Define the parameter and its distribution 
 
-The 21 testing model parameters are defined in this part, including parameter name, probability distribution, and distribution parameter. To prevent the computational error, we adjusted the range of \code{SULT_VmaxC} and \code{UGT_VmaxC} from $U(0, 15)$ to $U(0, 10)$ in this case. The objects \code{q} and \code{dist} are used to set the type of distribution that will use to generate the parameter matrix in \pkg{GNU MCSim} (for uncertainty analysis) and \proglang{R} (for SA).
+The 21 testing model parameters are defined in this part, including parameter name, probability distribution, and distributed parameter value. To prevent the computing error, the range of \code{SULT_VmaxC} and \code{UGT_VmaxC} need to adjust from $U(0, 15)$ [@s13318-015-0253-x] to $U(0, 10)$ [@fphar201800588]. The objects \code{q} and \code{dist} are set to the type of distribution that will use to generate the parameter matrix in \pkg{GNU MCSim} (for uncertainty analysis) and \proglang{R} (for SA).
 
 ```{r, eval=T}
 params <- c("lnTg", "lnTp", "lnCYP_Km","lnCYP_VmaxC",
@@ -469,7 +469,7 @@ q.arg <-list(list(Tg-rng, Tg+rng), list(Tp-rng, Tp+rng),
 
 ### Define additional input condition and output time and variables
 
-To improve computational speed, this case only uses \pkg{GNU MCSim} to estimate the concentration of acetaminophen (APAP) and its metabolites glucuronide (APAP-G) and sulfate (APAP-S) in plasma. The setting oral dose of APAP is 20 mg/kg in this example. Generally, the input dosing method can be defined through the \code{condition} argument. Since the unit of the given dose is mg/kg, the \code{mgkg_flag} is set to 1. More definition of input schedule functions can be found in the section of input functions in \pkg{GNU MCSim} User’s Manual (https://www.gnu.org/software/mcsim/mcsim.html#Input-functions).
+To optimize the computing speed, this case only uses \pkg{GNU MCSim} to estimate the concentration of APAP and its metabolites glucuronide (APAP-G) and sulfate (APAP-S) in plasma. The setting oral dose of APAP is 20 mg/kg in this example. Generally, the input dosing method can be defined through the \code{condition} argument. Since the unit of the given dose is mg/kg, the \code{mgkg_flag} is set to 1. More definition of input schedule functions can be found in the section of input functions in \pkg{GNU MCSim} User’s Manual (https://www.gnu.org/software/mcsim/mcsim.html#Input-functions).
 
 ```{r, eval=T}
 conditions <- c("mgkg_flag = 1",
@@ -482,7 +482,7 @@ times <- seq(from = 0.1, to = 12.1, by = 0.2)
 
 ### Uncertainty analysis
 
-We apply uncertainty analysis through the \code{solve_mcsim} and visualize the result by \code{pksim}. Some example APAP PK data are included in the \pkg{pksensi} with experiment time (h) and concentration (mg/L).
+We apply uncertainty analysis through the \code{solve_mcsim} and visualize the result by \code{pksim} function. Some example data are included in the \pkg{pksensi} with experiment time (h) and concentration (mg/L).
 
 ```{r}
 head(APAP)
@@ -500,7 +500,7 @@ out <- solve_mcsim(mName = mName, params = params, vars = vars,
 
 Figure \ref{fig:pksim-MC} shows the uncertainty analysis of APAP data and modeling results. For parent compound, all data points are located in the simulated interval of 25-75%. Through this result, we can determine that the simulated outputs can accurately generate the same concentration profile as the in-vivo experiment under the setting of parameter ranges for APAP. The simulated result of metabolites APAP-G shows the different pharmacokinetic profile with experiment data. However, all data points are located in the simulated interval.
 
-```{r, fig.cap = '\\label{fig:pksim-MC}Coverage checks of prior PBPK model predictions with calibrated APAP data', fig.height=3}
+```{r, fig.cap = '\\label{fig:pksim-MC}Coverage checks of prior PBPK model predictions with calibrated APAP data', fig.height=3.5, fig.width=9}
 par(mfrow = c(1,3), mar = c(4,4,1,1))
 pksim(out, xlab = "Time (h)", ylab = "Conc. (ug/L)", main = "APAP")
 points(APAP$Time, log(APAP$APAP * 1000))
@@ -523,7 +523,7 @@ x <- rfast99(params = params, n = 512, q = q, q.arg = q.arg, replicate = 10)
 
 ### Conduct the global SA
 
-To conduct the global SA with \pkg{GNU MCsim} and \pkg{pksensi}, the input file with given "Setpoint" condition should be generated before modeling. The file can create by \code{generate_infile} function. The \code{solve_mcsim} can also automatically create the input file and compute the output.
+To conduct the global SA with \pkg{GNU MCsim} and \pkg{pksensi}, the input file with given "setpoint" condition should be generated before modeling. The file can create by \code{generate_infile} function. The \code{solve_mcsim} can also automatically create the input file and compute the output.
 
 ```{r, eval=T}
 out <- solve_mcsim(x, mName = mName,
@@ -539,7 +539,7 @@ out <- solve_mcsim(x, mName = mName,
 
 The plotting function can create the result of time-dependent sensitivity measurement to determine the parameter impact on model output over time (Figure \ref{fig:APAP-sensi}). 
 
-```{r, eval=T, fig.height=8, fig.width=8, fig.cap = '\\label{fig:APAP-sensi}Time-dependent sensitivity indices of the plasma APAP concentration estimated from APAP PBPK model during 12-hr time period post intake.'}
+```{r, eval=T, fig.height=8, fig.width=8, fig.cap = '\\label{fig:APAP-sensi}Time-dependent SI of the plasma APAP concentration estimated from APAP-PBPK model during 12-hr time period post intake.'}
 plot(out, vars = "lnCPL_APAP_mcgL")
 ```
 
@@ -549,7 +549,7 @@ In addition, through using the \code{check}, the parameter with sensitivity and 
 heat_check(out, order = "total order")
 ```
 
-Adding the `index = "CI"` in the function can further investigate the convergence index. Based on the current setting of sampling size, most parameters cannot reach the acceptable criteria of convergence (Figure \ref{fig:Heat-CI}). Therefore, a higher number of sampling is necessary. The sample size of convergence in the current PBPK model is 8,192 [@fphar201800588]. However, based on the current sample size we still can find 6 parameters that can be an influential parameter for the plasma APAP concentration.
+Adding the `index = "CI"` in the function can further investigate the convergence index. Based on the current setting of sampling size, most parameters cannot reach the acceptable criteria of convergence (Figure \ref{fig:Heat-CI}). Therefore, a higher number of sampling is necessary. The sample size of convergence in the current PBPK model is 8,192 [@fphar201800588]. However, based on the current sample size we still can find 6 parameters that can be an important parameter for the plasma APAP concentration.
 
 ```{r, eval=T, fig.cap = '\\label{fig:Heat-CI}Heat map representation of time-dependent total CI computed for global SA method', fig.height=5}
 heat_check(out, index = "CI", order = "total order")
@@ -557,11 +557,11 @@ heat_check(out, index = "CI", order = "total order")
 
 # Concluding remarks
 
-Computational modeling has become an important technique in modern scientific research to support the hypothesis, experiment, and discoveries. Uncertainty and SA is essential knowledge for modelers to conduct the model development and examination. More computational tools had been developed for various types of modeling and simulation. The \pkg{GNU MCSim} is a powerful simulation software package, that can conduct dynamical simulation for biological-based modeling, and it's mainly built for PK research with probabilistic approaches [@bois2009gnu]. The \proglang{R} is a comprehensive statistical computing language that can conduct probabilistic programming and have tons of packages for statistical analysis and data visualization. We initiated \pkg{pksensi} that aim to conduct comprehensive and efficient global SA workflow in PK modeling, which hasn't been developed for open source communities. The current version had included \pkg{GNU MCSim} and \pkg{deSolve} as the main solver in our model assessment. Compare with \pkg{deSolve} package, we found that The \pkg{GNU MCSim} can provide better efficiency to solve the ODE in PK models. Although \pkg{pksensi} provide the features and functions to install and link with \pkg{GNU MCSim}, conducting the uncertainty and SA in PK modeling, the overall learning curve of this workflow might steep for users that are not familiar with \pkg{GNU MCSim} from model development, debugging, and testing. Therefore, the general \proglang{R} package, such as \pkg{deSolve}, can be an alternative option for \proglang{R} user. Some developed package in \proglang{R} had also provide the features to solve ODE such as \pkg{RxODE} [@wang2016tutorial] and \pkg{mrgsolve} [@R-mrgsolve]. We hope to incorporate these packages that can improve the user experience in using \pkg{pksensi} in the future.
+Computational modeling has become an important technique in modern scientific research to support the hypothesis, experiment, and discoveries. Uncertainty and SA is essential knowledge for modelers to conduct the model development and examination. More computational tools had been developed for various types of modeling and simulation. The \pkg{GNU MCSim} is a powerful simulation software package, that can conduct dynamical simulation for biological-based modeling, and it's mainly built for PK research with probabilistic approaches [@bois2009gnu]. The \proglang{R} is a well-developed statistical computing language that can conduct probabilistic programming and have tons of packages for statistical analysis and data visualization. We initiated \pkg{pksensi} that aim to conduct comprehensive and efficient global SA workflow in PK modeling, which hasn't been developed for open source communities. The current version had included \pkg{GNU MCSim} and \pkg{deSolve} as the main solver in our model assessment. Compare with \pkg{deSolve} package, we found that The \pkg{GNU MCSim} can provide better efficiency to solve the ODE in PK models. Although \pkg{pksensi} provide the essential features and functions to install and link with \pkg{GNU MCSim}, conducting the uncertainty and SA in PK modeling, the overall learning curve of this workflow might steep for users that are not familiar with \pkg{GNU MCSim} from model development, debugging, and testing. Therefore, the general \proglang{R} package, such as \pkg{deSolve}, can be an alternative option for \proglang{R} user. Some developed package in \proglang{R} had also provide the features to solve ODE such as \pkg{RxODE} [@wang2016tutorial] and \pkg{mrgsolve} [@R-mrgsolve]. We hope to incorporate these packages that can improve the user experience in using \pkg{pksensi} in the future.
 
 Moreover, some fundamental packages on the CRAN repository and other software platforms had been built to perform global SA with different algorithms. The development of \pkg{pksensi} is mainly for PK models that are constructed by ODE. It provides a straightforward application to investigate the impact of parameters on model output across simulation time-points and variables. We adopted the eFSAT method, a common variance-based SA that had better efficiency and accuracy in the model assessment. It can exam the parameter effect from first order to the total order. In addition, the package can not only conduct global SA but also include the function to assess the convergence of sensitivity measurements, which is rarely discussed in most global SA studies and its software package. We also develop the function to visualize the output result that can help us distinguish the "influential" and "non-influential" parameters that can be applied in parameter fixing in the model Calibration. In addition to eFAST, Some studies applied another global SA algorithm in the physiologically and biologically based ODE models, such as compartmental absorption and transit (also known as CAT) and other system biology models [@melillo2019variance; @sumner2012methodology]. Base on our knowledge, the eFAST is a least computational expensive approch than other Monte-Carlo based Sobol' method. In future version, we expect to add additional global SA approach that had been applied in advanced studies [@glen2012estimating; @ring2017identifying]. The other features such as principle component analysis [@lamboni2011multivariate] were considered to further include in our global SA workflow.
 
-It is worth noting that the global SA results are limited to the specific model and the given range of the model parameter. The provided conditions, such as the number of examing parameter, parameter distribution, parameter range, and the given dosing level in PK model might have a potential impact on the level of importance of each parameter. The misconduct of the setting condition might lead to the incorrect estimated result. In other words, if we have various types of experiment data (e.g. different exposure routes and biological measurements) and will use them in model calibration, it will enhance the difficulties in global SA. The complex model with a high dimension of the parameter is also a challenge in global SA, which will need higher computer demand in the model assessment. More additional applications still need to be investigated and strengthen. Overall, \pkg{pksensi} provide an additional option of performing global SA for PK model and can create robust and reproducible results for decision making in model calibration. 
+It is worth noting that the global SA results are limited to the specific model and the given range of the model parameter. The provided conditions, such as the number of examing parameter, parameter distribution, parameter range, and the given dosing level in PK model might have a potential impact on the level of importance of each parameter. The misconduct of the setting condition might lead to the incorrect estimated result. In other words, if we have various types of experiment data (e.g. different exposure routes and biological measurements) and will use them in model calibration, it will enhance the difficulties in global SA. The complex model with a high dimension of the parameter is also a challenge in global SA, which will need higher computer demand in the model assessment. More additional applications still need to be investigated and strengthen. Overall, \pkg{pksensi} provide an additional option of performing global SA for PK model and can create robust and reproducible results for decision making in model calibration. Although \pkg{pksensi} used here is mainly for PK model, it can also work for the other ODE-based dynamic model to investigate the sensitivity of model output from the input parameters.
 
 # Acknowledgments
 
