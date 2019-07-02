@@ -27,7 +27,7 @@ preamble: >
   \usepackage{booktabs}
 bibliography: references.bib 
 output: rticles::jss_article
-
+#output: word_document
 ---
 
 # Introduction
@@ -50,9 +50,9 @@ Although these tools provide various approaches to perform SA, they each individ
 
 ## Installation
 
-The R package \pkg{pksensi} is available from the comprehensive R Archive Network at https://CRAN.R-project.org/package=pksensi. The latest up-to-date version is available through GitHub at https://github.com/nanhung/pksensi. 
+The R package \pkg{pksensi} is available from the Comprehensive R Archive Network at https://CRAN.R-project.org/package=pksensi. The latest up-to-date version is available through GitHub at https://github.com/nanhung/pksensi. 
 
-In the beginning, the user need to install \pkg{GNU MCSim} [@JSSv002i09] and related standard \proglang{C} compiler to solve the ODE function. In addition, \pkg{pksensi} can link with \proglang{R} \pkg{deSolve} package, which includes the comprehensive integrator to solve ODE. The \pkg{GNU MCSim} can be installed by following the instruction in \pkg{GNU MCSim}’s manual on https://www.gnu.org/software/mcsim/mcsim.html or using the build-in function \code{mcsim_instal} in \pkg{pksensi}. The \proglang{C} compiler had originated in Linux or MacOS. The Windows user can install Rtools on https://cran.r-project.org/bin/windows/Rtools/ and set the working path of compiler (\code{/Rtools/mingw_64/bin} and \code{/Rtools/bin}) before using this function as, 
+In the beginning, the user need to install \pkg{GNU MCSim} [@JSSv002i09] and related standard \proglang{C} compiler to solve the ODE function. In addition, \pkg{pksensi} can link with \proglang{R} \pkg{deSolve} package, which includes the comprehensive integrator to solve ODE. The \pkg{GNU MCSim} can be installed by following the instruction in \pkg{GNU MCSim}’s manual on https://www.gnu.org/software/mcsim/mcsim.html or using the built-in function \code{mcsim_instal} in \pkg{pksensi}. The \proglang{C} compiler had originated in Linux or MacOS. The Windows user can install Rtools on https://cran.r-project.org/bin/windows/Rtools/ and set the working path of compiler (\code{/Rtools/mingw_64/bin} and \code{/Rtools/bin}) before using this function as: 
 
 ```{r, eval=F}
 Rtools.path <- "c:/Rtools/bin; c:/Rtools/mingw_64/bin"
@@ -61,14 +61,14 @@ Sys.setenv(PATH = paste(Rtools.path, Sys.getenv("PATH"), sep=";"))
 
 ## Parameter matrix generation
 
-We adopted eFAST, a widely used analysis of variance (ANOVA)-like global SA approach to decompose the variance to partial variances for multidimensional parameters in the numerical models, especially for ODE-based dynamical models, in this package. Most of the available eFAST functions, such as the algorithm to generate the parameter space and to set the sampling frequency, were sourced from the \proglang{R} \pkg{sensitivity} package [@R-sensitivity]. The eFAST method computes the sensitivity index (SI) via ANOVA-like decomposition of the function for analysis. This type of global SA approach and SI also know as Sobol' method and Sobol' index. Since the estimated SI is not stable (high variation) when using smaller sample sizes, we included a random phase-shift approach to conduct replicating sampling from random starting points across parameter space to test the convergence and robustness of the sensitivity measurement. Considering the model that is built under $y=f(x_{i})$. The sampling scheme can be written as:
+We adopted eFAST, a widely used analysis of variance (ANOVA)-like global SA approach to decompose the variance to partial variances for multidimensional parameters in the numerical models, especially for ODE-based dynamical models, in this package. Most of the available eFAST functions, such as the algorithm to generate the parameter space and to set the sampling frequency, were sourced from the \proglang{R} \pkg{sensitivity} package [@R-sensitivity]. The eFAST method computes the sensitivity index (SI) via ANOVA-like decomposition of the function for analysis. This type of global SA approach and SI also know as Sobol' method and Sobol' index. Since the estimated SI is not stable (high variation) when using smaller sample sizes, we included a random phase-shift approach to conduct replicating sampling from random starting points across parameter space to test the convergence and robustness of the sensitivity measurement. Considering the model that is built under $y=f(x_{i})$. The sampling scheme can be written as,
 
 $$ x_i = \frac{1}{2} + \frac{1}{\pi}\arcsin(\sin(\omega_is + \varphi_i)) $$
 
 where $x_i$ is the nominal value of the $i$-th parameter, and $\omega_i$ is a vector giving the set of frequencies, one frequency for each parameter, and $\varphi$ is a random phase-shift coefficient ranged from 0 to $2\pi$. The default set of frequencies is based on the study from @saltelli1999quantitative. Through the random phase-shift, the robust result of the sensitivity measurement should be similar across replications under the same sample size.
 For most Sobol'-based SA algorithm, the larger sample size is needed to reduce the probability of having negative estimates. However, FAST estimates are always positive according to its construction.
 
-To investigate the convergence of SI, we adopted the "exam" approach proposed by [@sarrazin2016global]. This method quantitatively assesses convergence by computing the width of 95% confidence intervals of computed SI for all parameters across all time-points and output variables. Through random phase shift procedure, the replicate SI values can be repeatedly sampled independently. Therefore, they can be used to investigate the convergence of SI as 
+To investigate the convergence of SI, we adopted the "exam" approach proposed by [@sarrazin2016global]. This method quantitatively assesses convergence by computing the width of 95% confidence intervals of computed SI for all parameters across all time-points and output variables. Through random phase shift procedure, the replicate SI values can be repeatedly sampled independently. Therefore, they can be used to investigate the convergence of SI as, 
 
 $$CI_{i,t} = max(SI_{i,t}^{ub}-SI_{i,t}^{lb})$$
 
@@ -103,7 +103,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-In this section, two types of PK model were applied here to demonstrate how \pkg{pksensi} work. The first one is generic model and the second is the chemical-specific model. The following code shows the version of the platform, version of \proglang{R} and \pkg{pksensi} that use to conduct the current example. We use \pkg{GNU MCSim} v6.1.0 in these examples. 
+In this section, two types of PK model were applied here to demonstrate how \pkg{pksensi} work. The first one is a generic model and the second is a chemical-specific model. The following code shows the version of the platform, version of \proglang{R} and \pkg{pksensi} that use to conduct the current example. We use \pkg{GNU MCSim} v6.1.0 in these examples. 
 
 ```{r}
 sessionInfo()$R.version$version.string
@@ -117,14 +117,14 @@ sessionInfo()$otherPkgs$pksensi$Version
 
 ### Equations
 
-In the first example, we use a generic, one-compartment PK model from \pkg{httk} package [@JSSv079i04] to demonstrate how \pkg{pksensi} can be applied to PK studies. The differential equations for this model is as:
+In the first example, we use a generic, one-compartment PK model from \pkg{httk} package [@JSSv079i04] to demonstrate how \pkg{pksensi} can be applied to PK studies. The differential equations for this model is as,
 
 $$\frac{dA_{gutlumen}}{dt} = -k_{gutabs} \cdot A_{gutlumen} + g(t)$$
 $$\frac{dA_{rest}}{dt} = \frac{dA_{gutlumen}}{dt}-k_{elim} \cdot A_{rest}$$
 
 where $A_{gutlumen}$ is the state variable that describes the quantity of compound in the gut lumen (mg) and $A_{rest}$ is the quantity of compound in rest of body and blood (mg). The parameter $k_{gutabs}$ is the absorption rate constant that describes the chemical absorption from the gut lumen into gut tissue through first-order processes (/h) and $k_{elim}$ is the elimination rate constant (/h), which is equal to the total clearance divided by the volume of distribution. The time-dependent function $g(t)$ is used to describe the oral dosing schedule. 
 
-The concentration of the chemical in the rest of body and blood ($C_{rest}$, mg/L) can be calculated as 
+The concentration of the chemical in the rest of body and blood ($C_{rest}$, mg/L) can be calculated as, 
 
 $$ C_{rest} = A_{rest} / V_{dist} \cdot BW$$
 
@@ -157,7 +157,7 @@ The \code{pbtk1cpt_inits.R} file includes \code{initParms} and \code{initStates}
 source(paste0(mName, "_inits.R"))
 ```
 
-On the other side, if the user only have the \proglang{C} version of the model code (\code{pbtk1cpt.c}), it can be compiled and loaded as:
+On the other side, if the user only has the \proglang{C} version of the model code (\code{pbtk1cpt.c}), it can be compiled and loaded as:
 
 ```{r, eval = F}
 system("R CMD SHLIB pbtk1cpt.c")
@@ -166,7 +166,7 @@ dyn.load(paste0("pbtk1cpt", .Platform$dynlib.ext))
 
 The parameter values and initial states can be customized to the specific condition. It can also schedule for the given dosing scenario. In the current setting, we assumed the initial condition of the intake dose to be 10 mg. We can use \code{initParms} and \code{initStates} functions to customize the parameter values and the initial state that will be used in the following modeling and SA. These additional functions are generated when compiling the model file through \pkg{GNU MCSim}. Therefore, if the model was compiled through \code{R CMD SHLIB}, the user need to assign the baseline value of model parameters and state variable on their own.
 
-We used the corresponding parameter value of acetaminophen (APAP) in this example. These model parameters are derived from the *in-vivo* or *in-vitro* experiment results. The parameter value can be generated from \code{parameterize_1comp} function in \pkg{httk} package as, 
+We used the corresponding parameter value of acetaminophen (APAP) in this example. These model parameters are derived from the *in-vivo* or *in-vitro* experiment results. The parameter value can be generated from \code{parameterize_1comp} function in \pkg{httk} package as: 
 
 ```{r, warning=F}
 library(httk)
@@ -202,7 +202,7 @@ Both \code{parms} and \code{initState} are "numeric variables" that contain the 
 Outputs
 ```
 
-The \code{Outputs} is a "character" that specify the estimated model output of concentration in rest body.
+The \code{Outputs} is a "character" that specifies the estimated model output of concentration in rest body.
 
 Using the \code{ode} function in \pkg{deSolve} package, we can visualize the pharmacokinetic profile (Figure \ref{fig:ode-PK}) according to the given parameter baseline and the time points (\code{t}).
 
@@ -235,7 +235,7 @@ set.seed(1234)
 x <- rfast99(params, n = 200, q = q, q.arg = q.arg, replicate = 20)
 ```
 
-The generated parameters are stored as a 3-D array under the named \code{a}, with the dimension of sample size, number of replication, and number of parameter, respectively.
+The generated parameters are stored as a 3-D array under the named \code{a}, with the dimension of sample size, number of replications, and number of parameters, respectively.
 
 ```{r}
 dim(x$a)
@@ -275,7 +275,7 @@ The output result \code{out} is an S3 object of \code{rfast99} as well, which ca
 plot(out)
 ```
 
-Here, we can see (Figure \ref{fig:pk-solvefun-rest}) that \code{vdist} and \code{ke} are dominating the plasma concentration before and after 5-hr post chemical intake, respectively. Besides, the \code{kgutabs} only plays a crucial role to determine the plasma concentration in the first hour. However, the current result is only based on the setting distribution of model parameters for APAP. The different given input conditions (e.g., range of parameter uncertainty, chemical dependent parameter value) can change the result (result not shown).
+Here, we can see (Figure \ref{fig:pk-solvefun-rest}) that \code{vdist} and \code{ke} are dominating the plasma concentration before and after 5-hr post chemical intake, respectively. Besides, the \code{kgutabs} only plays a crucial role to determine the plasma concentration in the first hour. However, the current result is only based on the setting distribution of model parameters for APAP. The different given input conditions (e.g., range of parameter uncertainty, chemical-dependent parameter value) can change the result (result not shown).
 
 The default output in the plotting is setting at the first variable. To exam the time-dependent SI of other variables, such as \code{Ametabolized} in this case, we need to assign the variable name \code{vars = "Ametabolized"} in \code{plot} function (Figure \ref{fig:pk-solvefun-Amet}).
 
@@ -283,7 +283,7 @@ The default output in the plotting is setting at the first variable. To exam the
 plot(out, vars = "Ametabolized")
 ```
 
-The Figure \ref{fig:pk-solvefun-Amet} shows that the amount of metabolized is also determined by parameter \code{ke}. Same as \code{Ccompartment}, the \code{kgutabs} contribute about 30 - 40% variation of model output in the first hour. The \code{BW} is the least important parameter in the current analysis, and therefore can be fixed in the model fitting to data and additional applications.
+Figure \ref{fig:pk-solvefun-Amet} shows that the amount of metabolized is also determined by parameter \code{ke}. Same as \code{Ccompartment}, the \code{kgutabs} contribute about 30 - 40% variation of model output in the first hour. The \code{BW} is the least important parameter in the current analysis, and therefore can be fixed in the model fitting to data and additional applications.
 
 In addition to use time-SI profile to investigate the parameter impact on model output, we can construct the relationship between parameter and the corresponding value of model output in the examination. 
 
@@ -314,7 +314,7 @@ The output variable \code{out} containing all the input arguments detailed befor
 dim(out$y)
 ```
 
-Some functions in \pkg{pksensi} provide a efficient way to check the result from global SA. The \code{check} can determine which parameters have relatively lower sensitivity measurement across the given time points and model outputs, and therefore can be applied parameter fixing in model calibration. The \code{check} also provides some feasible argument to specify the target output or change the cut-off value. The argument of \code{SI.cutoff} is setting at 0.05 to detect the relative non-influential parameters as default. 
+Some functions in \pkg{pksensi} provide an efficient way to check the result from global SA. The \code{check} can determine which parameters have relatively lower sensitivity measurement across the given time points and model outputs, and therefore can be applied parameter fixing in model calibration. The \code{check} also provides some feasible argument to specify the target output or change the cut-off value. The argument of \code{SI.cutoff} is setting at 0.05 to detect the relative non-influential parameters as default. 
 
 ```{r, eval=T}
 check(out, SI.cutoff = 0.05)
@@ -337,7 +337,7 @@ Then, before we conduct the SA through \pkg{GNU MCSim}, The following code is us
 compile_model(mName, application = "mcsim")
 ```
 
-Similar to \code{solve_fun} function that can define the initial value of parameter and state variable through generated functions, the \code{solve_mcsim} also has a \code{condition} argument that can be used to give the specific input value such as exposure dose, fixed parameter value or initial condition of state variable.
+Similar to \code{solve_fun} function that can define the initial value of parameters and state variable through generated functions, the \code{solve_mcsim} also has a \code{condition} argument that can be used to give the specific input value such as exposure dose, fixed parameter value or initial condition of state variables.
 
 ```{r, eval=T}
 conditions <- c("Agutlument = 10") 
@@ -536,7 +536,7 @@ points(APAP$Time, log(APAP$AS * 1000))
 
 ### Generate parameter matrix
 
-In global SA, we have to additionally generate the parameter matrix from the eFAST method. The current setting uses 512 sample size with 10 replication. 
+In global SA, we have to generate the parameter matrix from the eFAST method additionally. The current setting uses sample sizes of 512 with 10 replication. 
 
 ```{r, eval=T}
 set.seed(1234)
