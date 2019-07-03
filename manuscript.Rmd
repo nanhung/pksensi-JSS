@@ -83,7 +83,7 @@ The R package \pkg{pksensi} provides a useful function to solve ODEs in pharmaco
 The uncertainty analysis is a crucial modeling process within SA. Sometimes, it's difficult to have informative data to set up the parameter distribution. A wider range for a parameter distribution might cause a numerical error at extreme values. On the other hand, narrower ranges might cause the incorrect calibrated result of the model parameter. The uncertainty analysis using Monte Carlo is an appropriate approach in the data-driven modeling process to address this problem. Before fitting the data to model, the Monte Carlo can be applied with the given distribution of model parameter to examine whether the experiment data within the range of in the distribution of model output. \pkg{pksensi} also has a function that can link to \pkg{GNU MCSim} to conduct Monte Carlo analysis which is built in \pkg{GNU MCSim} and exam the simulation result. The general workflow of uncertainty and sensitivity analysis is illustrated in Figure \ref{fig:Workflow}.
 
 ```{r workflow, echo = FALSE, out.width = "100%", fig.cap = '\\label{fig:Workflow}Workflow for performing uncertainty and sensitivity analysis.'}
-knitr::include_graphics("diagram/workflow.png")
+knitr::include_graphics("diagram/Workflow.png")
 ```
 
 ## Output visualization and decision support
