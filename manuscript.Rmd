@@ -120,7 +120,7 @@ sessionInfo()$otherPkgs$pksensi$Version
 In the first example, we use a generic, one-compartment PK model from \pkg{httk} package [@JSSv079i04] to demonstrate how \pkg{pksensi} can be applied to PK studies. The differential equations for this model is as,
 
 $$\frac{dA_{gutlumen}}{dt} = -k_{gutabs} \cdot A_{gutlumen} + g(t)$$
-$$\frac{dA_{rest}}{dt} = \frac{dA_{gutlumen}}{dt}-k_{elim} \cdot A_{rest}$$
+$$\frac{dA_{rest}}{dt} = k_{gutabs} \cdot A_{gutlumen}-k_{elim} \cdot A_{rest}$$
 
 where $A_{gutlumen}$ is the state variable that describes the quantity of compound in the gut lumen (mg) and $A_{rest}$ is the quantity of compound in rest of body and blood (mg). The parameter $k_{gutabs}$ is the absorption rate constant that describes the chemical absorption from the gut lumen into gut tissue through first-order processes (/h) and $k_{elim}$ is the elimination rate constant (/h), which is equal to the total clearance divided by the volume of distribution. The time-dependent function $g(t)$ is used to describe the oral dosing schedule. 
 
@@ -314,7 +314,7 @@ The output variable \code{out} containing all the input arguments detailed befor
 dim(out$y)
 ```
 
-Some functions in \pkg{pksensi} provide an efficient way to check the result from global SA. The \code{check} can determine which parameters have relatively lower sensitivity measurement across the given time points and model outputs, and therefore can be applied parameter fixing in model calibration. The \code{check} also provides some feasible argument to specify the target output or change the cut-off value. The argument of \code{SI.cutoff} is setting at 0.05 to detect the relative non-influential parameters as default. 
+Some functions in \pkg{pksensi} provide an efficient way to check the result from global SA. The \code{check} can determine which parameters have relatively lower sensitivity measurement across the given time points and model outputs, and therefore can be applied parameter fixing in model calibration. The \code{check} also provides some feasible argument to specify the target output or change the cut-off value. The argument of \code{SI.cutoff} is setting at 0.05 to detect the relative non-influential parameters as default, representing the 5% change of the output is contributed from the specific parameter variation. 
 
 ```{r, eval=T}
 check(out, SI.cutoff = 0.05)
@@ -350,7 +350,7 @@ After solving the equations under the same given condition, we can find that \pk
 
 ## Acetaminophen-PBPK model
 
-The aim of this section is to apply global SA for APAP-PBPK model through \pkg{pksensi}. The model code is included in this package in https://github.com/nanhung/pksensi/blob/master/tests/pbpk_apap.model and can be generated through \code{pbpk_apap_model} function. We applied the global SA workflow to the original published model with 21 model parameters [@s13318-015-0253-x]. The descriptions of each parameter and the sampling ranges are list in Table \ref{tab:data}.
+The aim of this section is to apply global SA for APAP-PBPK model through \pkg{pksensi}. The model describes the pharmacokinetics of parent APAP and its two metabolites glucuronide (APAP-G) and sulfate (APAP-S) through the dozens of parameters. The model code is included in this package in https://github.com/nanhung/pksensi/blob/master/tests/pbpk_apap.model and can be generated through \code{pbpk_apap_model} function. We applied the global SA workflow to the original published model with 21 model parameters [@s13318-015-0253-x]. The descriptions of each parameter and the sampling ranges are list in Table \ref{tab:data}.
 
 ```{r, results='asis',message=FALSE,warning=FALSE, echo = F}
 library(xtable)
@@ -385,10 +385,10 @@ y <- c("Gatric emptying time constant",
        "Sulfation pathway substrate inhibition, Ki",
        "Sulfation pathway PAPS, Km",
        "Sulfation pathway acetaminophen, Vmax",
-       "Glucronidation pathway acetaminophen, Km",
-       "Glucronidation pathway substrate inhibition, Ki",
-       "Glucronidation pathway GA, Km",
-       "Glucronidation pathway acetaminophen, Vmax",
+       "Glucuronidation pathway acetaminophen, Km",
+       "Glucuronidation pathway substrate inhibition, Ki",
+       "Glucuronidation pathway GA, Km",
+       "Glucuronidation pathway acetaminophen, Vmax",
        "APAP-G hepatic transporter, Km",
        "APAP-G hepatic transporter, Vmax",
        "APAP-S hepatic transporter, Km",
@@ -491,7 +491,7 @@ q.arg <-list(list(Tg-rng, Tg+rng), list(Tp-rng, Tp+rng),
 
 ### Define additional input condition and output time and variables
 
-To optimize the computing speed, this case only uses \pkg{GNU MCSim} to estimate the concentration of APAP and its metabolites glucuronide (APAP-G) and sulfate (APAP-S) in plasma. The oral dose of APAP is 20 mg/kg in this example. Generally, the input dosing method can be defined through the \code{condition} argument. Since the unit of the given dose is mg/kg, the \code{mgkg_flag} is set to 1. More definition of input schedule functions can be found in the section of input functions in \pkg{GNU MCSim} User’s Manual (https://www.gnu.org/software/mcsim/mcsim.html#Input-functions).
+To optimize the computing speed, this case only uses \pkg{GNU MCSim} to estimate the concentration of APAP and its metabolites in plasma. The oral dose of APAP is 20 mg/kg in this example. Generally, the input dosing method can be defined through the \code{condition} argument. Since the unit of the given dose is mg/kg, the \code{mgkg_flag} is set to 1. More definition of input schedule functions can be found in the section of input functions in \pkg{GNU MCSim} User’s Manual (https://www.gnu.org/software/mcsim/mcsim.html#Input-functions).
 
 ```{r, eval=T}
 conditions <- c("mgkg_flag = 1",
