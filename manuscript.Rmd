@@ -592,7 +592,7 @@ Overall, \pkg{pksensi} provides comprehensive features and functions for perform
 
 # Acknowledgments
 
-This work was funded, in part, by grant 1U01FD005838 from the U.S. Food and Drug Administration and grant P42 ES027704 from the U.S. National Institute of Environmental Health Sciences. This article reflects the views of the author and should not be construed to represent FDA’s views or policies. We thank Dr. Yasha Hartberg and Dr. Barbara Gastel at the Texas A&M University and Dr. Frederic Bois from Certara for reviewing the manuscript and consultation.
+This work was funded, in part, by grant 1U01FD005838 from the U.S. Food and Drug Administration (FDA) and grant P42 ES027704 from the U.S. National Institute of Environmental Health Sciences. This article reflects the views of the author and should not be construed to represent FDA’s views or policies. We thank Dr. Yasha Hartberg and Dr. Barbara Gastel at the Texas A&M University, Dr. Frederic Bois from Certara and Dr. Eleftheria Tsakalozou from U.S. FDA for reviewing the manuscript and consultation.
 
 # Session information
 
