@@ -133,9 +133,9 @@ where $V_{dist}$ is the volume of distribution (L/kg BW) and $BW$ is the body we
 
 ### Model implementations with R deSolve package
 
-To start, we implemented the one-compartment PK model in \proglang{R}. \pkg{pksensi} allows users select the preferred method to solve the PK model, either with the \pkg{deSolve} package or with \pkg{GNU MCSim} through the compile function. Running model under \pkg{GNU MCSim} native code can have a faster speed to obtain the model outputs. This section mainly focus on how to conduct global SA with \pkg{deSolve} package with pure \proglang{R} environment. Then compare the computing time with \pkg{GNU MCSim}.
+To start, we implemented the one-compartment PK model in \proglang{R}. \pkg{pksensi} allows users select the preferred method to solve the PK model, either with the \pkg{deSolve} package or with \pkg{GNU MCSim} through the compile function. This section mainly focus on how to conduct global SA with \pkg{deSolve} package with pure \proglang{R} environment. Then compare the computing time with \pkg{GNU MCSim}.
 
-The one-compartment PK model was mainly includes two state variables, which are the quantity of compound in the gut lumen (\code{Agutlument}) and the rest of body (\code{Acompartmant}). The \code{Ametabolized} is the quantity of compound transform and metabolize through hepatic clearance. The \code{AUC} is the calculated area under the curve of the rest body ($mg \cdot h/L$).
+The one-compartment PK model can describe the quantity of compound in the gut lumen (\code{Agutlument}) and the rest of body (\code{Acompartmant}). The \code{Ametabolized} is the quantity of compound transform and metabolize through hepatic clearance. The \code{AUC} is the calculated area under the curve of the rest body ($mg \cdot h/L$). 
 
 
 ```{r, eval=T}
