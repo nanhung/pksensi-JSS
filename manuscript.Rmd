@@ -425,7 +425,7 @@ Km_AS <- log(2.29e4)
 rng <- 1.96 
 ```
 
-Generally, wide range of parameter value might cause the computing error when solving the differential equation. One of the effective ways to prevent this problem is to adjust the value of relative and absolute error tolerance to control the error appearance by resetting these parameters in a lower value. The \code{generate_infile} and \code{solve_mcsim} provide the arguments of \code{rtol} and \code{atol} that adjust the error tolerance to prevent the unwanted error. However, the modification will decrease the computing speed. Therefore, the alternative method to prevent this issue is to detect the crucial parameter range that causes the problem. Also, setting the maximum number of steps to higher value instead of using the default value (500) in \pkg{GNU MCSim} can prevent this problem (internally defined). The maximum number of step is set to 5000 in this case. Here we separate the global SA of APAP-PBPK model process to several steps. The value can reset through reinstall the the \pkg{GNU MCSim} by using \code{mcsim_install(mxstp = 5000)}.
+Generally, wide range of parameter value might cause the computing error when solving the differential equation. One of the effective ways to prevent this problem is to adjust the value of relative and absolute error tolerance to control the error appearance by resetting these parameters in a lower value. The \code{generate_infile} and \code{solve_mcsim} provide the arguments of \code{rtol} and \code{atol} that adjust the error tolerance to prevent the unwanted error. However, the modification will decrease the computing speed. Therefore, the alternative method to prevent this issue is to detect the crucial parameter range that causes the problem. Also, setting the maximum number of steps to higher value in \pkg{GNU MCSim} can prevent this problem (internally defined). The maximum number of step is set to 5000 (default) in this case. The value can reset through reinstall the the \pkg{GNU MCSim}. Here we separate the global SA of APAP-PBPK model process to several steps.
 
 ### Prepare and compile the model file
 
@@ -540,7 +540,7 @@ The plotting function can create the result of time-dependent sensitivity measur
 plot(out, vars = "lnCPL_APAP_mcgL")
 ```
 
-In addition, through using \code{check}, the sensitivity and convergence indices can be preliminary checked for all output variables. Based on our previous study, we proposed the heatmap visualization approach \code{heat_check} to distinguish "influential" and "non-influential" parameters with a "cut-off" point. Through the given argument \code{order}, we can select the specific order of sensitivity measurement that we're interested in (Figure \ref{fig:Heat-SI}). 
+Based on our previous study, we proposed the heatmap visualization approach \code{heat_check} to distinguish "influential" and "non-influential" parameters with a "cut-off" point. Through the given argument \code{order}, we can select the specific order of sensitivity measurement that we're interested in (Figure \ref{fig:Heat-SI}). 
 
 ```{r, eval=T, fig.cap = '\\label{fig:Heat-SI}Heat map representation of time-dependent total SI computed for global SA method', fig.height=5}
 heat_check(out, order = "total order")
