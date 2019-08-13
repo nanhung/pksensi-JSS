@@ -14,9 +14,9 @@ author:
 title:
   formatted: "\\pkg{pksensi}: R package to apply global sensitivity analysis in physiologically based kinetic models"
   # If you use tex in the formatted title, also supply version without
-  plain:     "pksensi: R package to apply global sensitivity analysis in physiologically based kinetic models"
+  plain: "pksensi: R package to apply global sensitivity analysis in physiologically based kinetic models"
   # For running headers, if needed
-  short:     "**pksensi**: Global SA for PK models in R"
+  short: "**pksensi**: Global SA for PK models in R"
 abstract: >
   Sensitivity analysis (SA) is an essential tool for modelers to understand the influence of model parameters on model outputs. It is also increasingly used in developing and assessing pharmacokinetic models. For instance, we recently applied a global SA workflow to reduce the computational burden in the Bayesian Markov Chain Monte Carlo-based calibration process of a physiologically based pharmacokinetic (PBPK) model. Although several SA algorithms and software packages are available, no comprehensive software package exists that allows users to seamlessly solve the PBPK model differential equations, run sensitivity analyses, visualize SA results, and discriminate between the “non-influential” model parameters that can be fixed and those that need calibration. Therefore, we developed an open-source \proglang{R} package, called **pksensi**, to fill this need and make SA more accessible in pharmacological and toxicological research. This package can investigate both parameter uncertainty and sensitivity in pharmacokinetic models, including those with multivariate model outputs, such as multiple time-points and tissue compartments. It also refined the extended Fourier Amplitude Sensitivity Test method for SA by adding a random phase-shift to analyze the statistical variability of the sensitivity index for each model parameter. Furthermore, pksensi includes functions to check the convergence of the SA results. Utilizing pksensi, we successfully reproduced our previously published SA results of human PBPK modeling for acetaminophen and its two primary metabolites. Overall, **pksensi** improves the user experience of performing SA and can create robust and reproducible results for decision making in pharmacokinetic model calibration. 
 keywords:
@@ -28,7 +28,7 @@ preamble: >
   \usepackage{booktabs}
 bibliography: references.bib 
 output: rticles::jss_article
-#output: word_document
+# output: word_document
 ---
 
 # Introduction
@@ -178,7 +178,7 @@ t <- seq(from = 0.01, to = 24.01, by = 1)
 y <- ode(y = initState, times = t, func = pbtk1cpt, parms = parms)
 ```
 
-```{r, eval=T, fig.height=4, fig.width=4, fig.cap = '\\label{fig:ode-PK}Simulation results of one-compartment PK model.'}
+```{r, eval=T, fig.cap = '\\label{fig:ode-PK}Simulation results of one-compartment PK model.'}
 plot(y)
 ```
 
@@ -290,7 +290,7 @@ Based on the sensitivity measurement of the total order, the result shows that \
 
 ### Model implementation with GNU MCSim
 
-In addition to using \pkg{deSolve} to solve differential equations in PK model, the \pkg{GNU MCSim} can also be used, and provides better computational efficiency. To start, the users need to install \pkg{GNU MCSim} and related standard \proglang{C} compiler to solve the ODE function. To solve ODEs through \pkg{GNU MCSim}, we need to change the argument to \code{application = mcsim} in \code{compile_model}. The following \proglang{R} script will download the one-compartment PK model from https://github.com/nanhung/pksensi/blob/master/tests/pbtk1cpt.model. 
+In addition to using \pkg{deSolve} to solve differential equations in PK model, the \pkg{GNU MCSim} can also be used, and provides better computational efficiency. To start, the users need to install \pkg{GNU MCSim} and related standard \proglang{C} compiler to solve the ODE function. The following \proglang{R} script will download the one-compartment PK model from https://github.com/nanhung/pksensi/blob/master/tests/pbtk1cpt.model. 
 
 ```{r, eval=T}
 pbtk1cpt_model()
@@ -305,7 +305,7 @@ system.time(out <- solve_fun(x, time = t,
                              outnames = outputs))
 ```
 
-Then, before we conduct the SA through \pkg{GNU MCSim}, The following code is used to compile the \pkg{GNU MCSim} model code to the executable program. 
+Then, before we conduct the SA through \pkg{GNU MCSim}, The following code is used to compile the \pkg{GNU MCSim} model code to the executable program. To solve ODEs through \pkg{GNU MCSim}, we need to use \code{compile_model} with argument \code{application = mcsim}. 
 
 ```{r, eval=T, message=F, warning=F}
 mName <- "pbtk1cpt"
